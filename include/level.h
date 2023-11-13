@@ -1,0 +1,34 @@
+#ifndef LEVEL_H
+#define LEVEL_H
+
+typedef enum MinigameMode
+{
+    MINIGAME_BATTLE     = 0x1,
+    MINIGAME_TOURNAMENT = 0x2,
+    MINIGAME_ADVENTURE  = 0x4,
+    MINIGAME_PLATINUM   = 0x8,
+    MINIGAME_TROPHY     = 0x10,
+    MINIGAME_RELIC      = 0x20,
+    MINIGAME_GEM        = 0x40,
+    MINIGAME_CRYSTAL    = 0x80,
+    MINIGAME_BOSS       = 0x100,
+    MINIGAME_ADVHUB     = 0x200,
+
+} MinigameMode;
+
+typedef enum LevelID
+{
+    LEVELID_CRASHBALL   = 14,
+    LEVELID_BEACH_BALL  = 15,
+    LEVELID_N_BALLISM   = 16,
+    LEVELID_SKY_BALLS   = 17,
+    LEVELID_OXIDE_RIDE  = 31,
+    LEVELID_TIE_BREAKER = 32,
+    LEVELID_WARP_ROOM_1 = 33,
+    LEVELID_WARP_ROOM_2 = 34,
+    LEVELID_WARP_ROOM_3 = 35,
+    LEVELID_WARP_ROOM_4 = 36,
+    LEVELID_WARP_ROOM_5 = 37,
+} LevelID;
+
+#endif

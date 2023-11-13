@@ -1,0 +1,22 @@
+{
+    "compiler": {
+        "function_sections": 1,
+        "reorder_functions": 1,
+        "optimization": 2,
+        "debug": 1,
+        "psyq": 0,
+        "8mb": 1
+    },
+    "versions": [
+        {
+            "ntsc_u": {
+                "name": "bash.bin",
+                "symbols": [
+                    "functions.txt",
+                    "variables.txt"
+                ],
+                "build_id": 1
+            }
+        }
+    ]
+}

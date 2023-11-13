@@ -1,0 +1,7 @@
+_ArcTan = 0x8001463c;
+_SubtractAngles = 0x800154a0;
+_Rand = 0x80015590;
+_GetStructure = 0x800264e8;
+_CSQRT = 0x80032490;
+_SetBotInput = 0x80013c94;
+_UpdateBots = 0x800b8a68;
