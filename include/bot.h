@@ -12,7 +12,7 @@ typedef enum BotState
     BOTSTATE_DEFEND          = 0x3,
     BOTSTATE_FOLLOW_TARGET   = 0x4,
     BOTSTATE_TAUNT           = 0x5,
-    BOTSTATE_DEAD            = 0x14,
+    BOTSTATE_DO_NOTHING      = 0x14,
     BOTSTATE_WAIT            = 0x15
 } BotState;
 

@@ -11,7 +11,7 @@
 /* In game global functions */
 s32 _ArcTan(s32 x, s32 y);
 s32 _CSQRT(s32 n);
-AnotherBallStruct * _GetStructure(BallLinkedList *list, u32 flags);
+BallPhysics * _GetStructure(BallLinkedList *list, u32 flags);
 void _SetBotInput(Controller * controller, u32 inputs);
 
 /* Ball functions */

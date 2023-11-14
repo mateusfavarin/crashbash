@@ -551,10 +551,10 @@ void Bot_onUpdate(s32 playerID)
         pBot->field12_0x30--;
     }
 
-    if ((pm.field5_0x2c == _unk_8009e0d8) || (pm.field5_0x2c ==  _unk_8009e0e2))
+    if ((pm.action == _unk_8009e0d8) || (pm.action ==  _unk_8009e0e2))
     {
         pBot->tauntCooldown = SECONDS(1/6);
-        pBot->state = BOTSTATE_DEAD;
+        pBot->state = BOTSTATE_DO_NOTHING;
     }
 
     if (pBot->enemyID == NO_PLAYER)
@@ -573,9 +573,9 @@ void Bot_onUpdate(s32 playerID)
         Ball * pBall = pBallList->pBall;
         if ((pBallObject) && (pBall) && (pBall->state == 1)) // TODO: figure out ball->state and make it an Enum
         {
-            AnotherBallStruct * pAnotherBall = _GetStructure(pBallList, 0x800);
-            if ((pAnotherBall) &&
-                (PredictBallCrossingLine(playerID, &pBallObject->pos, &predictedBallPos, pAnotherBall->angle, goalLine)))
+            BallPhysics * pBallPhysics = _GetStructure(pBallList, 0x800);
+            if ((pBallPhysics) &&
+                (PredictBallCrossingLine(playerID, &pBallObject->pos, &predictedBallPos, pBallPhysics->angle, goalLine)))
             {
                 s32 distSquared = ((pBallObject->pos.x - predictedBallPos.x) * (pBallObject->pos.x - predictedBallPos.x)) + ((pBallObject->pos.z - predictedBallPos.z) * (pBallObject->pos.z - predictedBallPos.z));
                 if (distSquared < minDistSquared)
@@ -755,12 +755,12 @@ void Bot_onUpdate(s32 playerID)
                 BotChangeStateDefend(pBot);
             }
             break;
-        case BOTSTATE_DEAD:
+        case BOTSTATE_DO_NOTHING:
             break;
         case BOTSTATE_WAIT:
             if (minDist == 0)
             {
-                if (pm.field5_0x2c != SECONDS(1))
+                if (pm.action != ACTION_TAUNT)
                 {
                     pBot->state = BOTSTATE_SET_TARGET;
                 }

@@ -18,6 +18,18 @@ typedef enum PlayersCampaign
     COOP = 1,
 } PlayersCampaign;
 
+typedef enum PlayerAction
+{
+    ACTION_NONE     = 0,
+    ACTION_READY    = 28,
+    ACTION_MOVE     = 29,
+    ACTION_TAUNT    = 30,
+    ACTION_ATTACK   = 31,
+    ACTION_WIN      = 34,
+    ACTION_LOSE     = 36,
+    ACTION_GHOST    = 37,
+} PlayerAction;
+
 typedef struct Object
 {
     u32 status;
@@ -51,7 +63,7 @@ typedef struct PlayerMetadata
     void * field4_0x1c;
     Bot * pBot;
     u8 field4_0x24[8];
-    u16 field5_0x2c;
+    u16 action;
     s16 field6_0x2e;
     s16 teamID;
     u16 flags;
@@ -61,7 +73,8 @@ typedef struct PlayerMetadata
     s16 moveCooldown;
     u8 field13_0x4c[4];
     u16 score;
-    u8 field15_0x52[20];
+    u16 scoreStr;
+    u8 field15_0x54[18];
     s16 attackCooldown;
     u8 field17_0x68[4];
 } PlayerMetadata;

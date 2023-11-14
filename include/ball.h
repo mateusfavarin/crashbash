@@ -33,10 +33,14 @@ typedef struct BallLinkedList
     Ball * pBall;
 } BallLinkedList;
 
-typedef struct AnotherBallStruct
+typedef struct BallPhysics
 {
-    u8 field0_0x0[22];
+    u8 field0_0x0[14];
+    s16 speed;
+    s16 accel;
+    s16 deaccel;
+    s16 speedCap;
     s16 angle;
-} AnotherBallStruct;
+} BallPhysics;
 
 #endif
