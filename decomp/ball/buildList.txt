@@ -1,0 +1,2 @@
+ntsc_u, decomp, 0x8009d720, 0x0, src/hooks/hookBot.s
+ntsc_u, decomp, 0x80200000, 0x0, src/*.c src/kernel.s

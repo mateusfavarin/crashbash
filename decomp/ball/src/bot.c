@@ -95,7 +95,7 @@ const s32 angleDistortionData[MAX_BOT_QUALITY] = {
     @brief: Selects the next player that will be target by the bot
     @address: 0x800b84b8
     @params:
-        playerID
+        @playerID
     @return: enemyID
 */
 static s32 PickEnemy(s32 playerID)
@@ -115,7 +115,7 @@ static s32 PickEnemy(s32 playerID)
         return NO_PLAYER;
     }
 
-    s32 randEnemyFactor = _Rand(totalPublicEnemyFactor);
+    s32 randEnemyFactor = Rand(totalPublicEnemyFactor);
     s32 combinedEnemyFactor = 0;
     for (s32 i = 0; i < NUM_PLAYERS; i++)
     {
@@ -176,7 +176,7 @@ static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredic
     Rect line = pLines[cornerIndex];
     s32 angleDistortionFactor = Max(MAX_BOT_QUALITY - (_botDifficulty[playerID].quality + _defaultChallengeQuality), 0);
     s32 angleDistortion = angleDistortionData[angleDistortionFactor];
-    s32 predictedDistortion = _Rand(angleDistortion);
+    s32 predictedDistortion = Rand(angleDistortion);
     s32 predictedAngle = ballAngle + (predictedDistortion - angleDistortion);
     /*
         Despite having sine and cossine data, the game uses the cossine
@@ -448,7 +448,7 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
             if (((xDist * xDist) + (zDist * zDist)) < (maxDistance * maxDistance))
             {
                 s32 distAngle = _ArcTan(xDist, zDist);
-                s32 shotAngle = _SubtractAngles(distAngle, pm.pKart->angle);
+                s32 shotAngle = SubtractAngles(distAngle, pm.pKart->angle);
                 if (enemyID == NO_PLAYER)
                 {
                     if ((shotAngle > minAngle) && (shotAngle < maxAngle))
@@ -516,7 +516,7 @@ static inline void BotShootBall(Bot * pBot)
     @brief: Bot object logic, runs once per frame for each bot
     @address: 0x800b8a68
     @params:
-        playerID
+        @playerID
 */
 void Bot_onUpdate(s32 playerID)
 {
@@ -650,12 +650,8 @@ void Bot_onUpdate(s32 playerID)
     {
         case BOTSTATE_DEFEND:
             s32 botQuality = _botDifficulty[playerID].quality;
-            s32 qualityDist = (botQuality * 16) - _defaultChallengeQuality;
-            if (qualityDist < 1)
-            {
-                qualityDist = 1;
-            }
-            s32 randDist = qualityDist + _Rand(qualityDist) + FP(1);
+            s32 qualityDist = Max((botQuality * 16) - _defaultChallengeQuality, 1);
+            s32 randDist = qualityDist + Rand(qualityDist) + FP(1);
             if (_levelID == LEVELID_BEACH_BALL)
             {
                 // TODO
@@ -667,7 +663,7 @@ void Bot_onUpdate(s32 playerID)
                     u32 isAggro = false;
                     if (pBot->aggroCooldown == 0)
                     {
-                        s32 randQuality = _Rand(MAX_BOT_QUALITY);
+                        s32 randQuality = Rand(MAX_BOT_QUALITY);
                         if (randQuality > botQuality)
                         {
                             pBot->aggroCooldown = MAX_BOT_QUALITY + ((MAX_BOT_QUALITY - botQuality) / 2);
@@ -736,7 +732,7 @@ void Bot_onUpdate(s32 playerID)
                 }
                 else
                 {
-                    pBot->tauntCooldown = _Rand(SECONDS(2)) + SECONDS(1); // max 3s of cooldown
+                    pBot->tauntCooldown = Rand(SECONDS(2)) + SECONDS(1); // max 3s of cooldown
                     pBot->state = BOTSTATE_TAUNT;
                 }
             }
@@ -778,11 +774,11 @@ void Bot_onUpdate(s32 playerID)
             pBot->targetPos = pPlayer->pos;
             if ((playerID == _PLAYER_1_ID) || (playerID == _PLAYER_2_ID))
             {
-                pBot->targetPos.x = _Rand(FP(4)) - FP(2);
+                pBot->targetPos.x = Rand(FP(4)) - FP(2);
             }
             else
             {
-                pBot->targetPos.z = _Rand(FP(4)) - FP(2);
+                pBot->targetPos.z = Rand(FP(4)) - FP(2);
             }
             pBot->state = BOTSTATE_FOLLOW_TARGET;
             break;

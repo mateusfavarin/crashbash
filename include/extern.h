@@ -9,8 +9,6 @@
 #include <ball.h>
 
 /* In game global functions */
-u32 _SubtractAngles(s32 alpha, s32 beta);
-s32 _Rand(s32 range);
 s32 _ArcTan(s32 x, s32 y);
 s32 _CSQRT(s32 n);
 AnotherBallStruct * _GetStructure(BallLinkedList *list, u32 flags);
@@ -20,7 +18,6 @@ void _SetBotInput(Controller * controller, u32 inputs);
 void _UpdateBots(s32 playerID);
 
 /* In game global variables */
-extern u32 _PRNGSeed;
 extern u32 _levelID;
 extern u32 _gameFlags;
 extern s32 _playersCampaign;

@@ -1,5 +1,5 @@
 _controllers = 0x80051338;
-_PRNGSeed = 0x800517b8;
+_prng = 0x800517b8;
 _gameFlags = 0x8005a624;
 _minigameMode = 0x8005a646;
 _levelID = 0x8005a648;

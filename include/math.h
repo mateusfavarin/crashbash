@@ -81,6 +81,12 @@ typedef struct TrigTable
     s16 cos;
 } TrigTable;
 
+typedef struct PRNG
+{
+    u32 seed;
+    u32 increment;
+} PRNG;
+
 /* Inline functions */
 force_inline s32 Abs(s32 x)
 {
@@ -108,5 +114,17 @@ force_inline s32 Min(s32 x, s32 y)
     }
     return x;
 }
+
+extern PRNG _prng;
+force_inline void AdvanceSeed()
+{
+    _prng.seed += _prng.increment;
+    _prng.increment += (_prng.seed - (((s32)_prng.seed) >> 31));
+}
+
+/* Functions */
+u32 Rand(u32 range);
+s32 SubtractAngles(s32 x, s32 y);
+s32 AbsSubtractAngles(s32 x, s32 y);
 
 #endif
