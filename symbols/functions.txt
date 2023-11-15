@@ -2,4 +2,4 @@ _ArcTan = 0x8001463c;
 _GetStructure = 0x800264e8;
 _CSQRT = 0x80032490;
 _SetBotInput = 0x80013c94;
-_UpdateBots = 0x800b8a68;
+_Ball_Bot_onUpdate = 0x800b8a68;

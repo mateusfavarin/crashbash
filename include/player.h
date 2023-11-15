@@ -46,20 +46,20 @@ typedef struct Object
     u32 field19_0x90;
 } Object;
 
-typedef struct Kart
+typedef struct PlayerPhysics
 {
     u8 field0_0x0[20];
     s16 angle;
     u16 field2_0x16;
     s16 angleCalc;
-} Kart;
+} PlayerPhysics;
 
 typedef struct PlayerMetadata
 {
     void * field0_0x0;
     Object * pPlayer;
     void * field2_0x8[4];
-    Kart * pKart;
+    PlayerPhysics * pPlayerPhysics;
     void * field4_0x1c;
     Bot * pBot;
     u8 field4_0x24[8];

@@ -11,9 +11,11 @@ _botDifficulty = 0x8009d87c;
 _noHumansLeft = 0x8009d908;
 _unk_8009e0d8 = 0x8009e0d8;
 _unk_8009e0e2 = 0x8009e0e2;
-_defaultChallengeQuality = 0x800c1f00;
-_unk_800c1f0c = 0x800c1f0c;
-_PLAYER_3_ID = 0x800c271c;
-_PLAYER_4_ID = 0x800c2720;
-_PLAYER_2_ID = 0x800c2724;
-_PLAYER_1_ID = 0x800c2728;
+
+_Ball_pillarData = 0x800c1a7c;
+_Ball_defaultChallengeQuality = 0x800c1f00;
+_Ball_unk_800c1f0c = 0x800c1f0c;
+_Ball_PLAYER_3_ID = 0x800c271c;
+_Ball_PLAYER_4_ID = 0x800c2720;
+_Ball_PLAYER_2_ID = 0x800c2724;
+_Ball_PLAYER_1_ID = 0x800c2728;

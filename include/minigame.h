@@ -1,5 +1,5 @@
-#ifndef LEVEL_H
-#define LEVEL_H
+#ifndef MINIGAME_H
+#define MINIGAME_H
 
 typedef enum MinigameMode
 {

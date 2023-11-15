@@ -1,39 +1,39 @@
-#ifndef BALL_H
-#define BALL_H
+#ifndef ENTITY_H
+#define ENTITY_H
 
 #include <types.h>
 #include <math.h>
 #include <player.h>
 
-typedef enum BallColor
+typedef enum EntityColor
 {
     GRAY_BALL   = 0x1,
     RED_BALL    = 0x2
-} BallColor;
+} EntityColor;
 
-typedef struct Ball
+typedef struct Entity
 {
     u8 field0_0x0[20];
     u16 color;
     u8 field2_0x16[4];
     u16 state;
-} Ball;
+} Entity;
 
-typedef struct BallLinkedList
+typedef struct EntityLinkedList
 {
     u8 field0_0x0[8];
     void * field1_0x8;
     u8 field2_0xc[20];
-    struct BallLinkedList * next;
+    struct EntityLinkedList * next;
     u8 field4_0x24[36];
     void (* onInit)(s32);
     void (* onUpdate)(s32);
     u8 field7_0x50[4];
-    Object * pBallObject;
-    Ball * pBall;
-} BallLinkedList;
+    Object * pEntityObject;
+    Entity * pEntity;
+} EntityLinkedList;
 
-typedef struct BallPhysics
+typedef struct EntityPhysics
 {
     u8 field0_0x0[14];
     s16 speed;
@@ -41,6 +41,6 @@ typedef struct BallPhysics
     s16 deaccel;
     s16 speedCap;
     s16 angle;
-} BallPhysics;
+} EntityPhysics;
 
 #endif

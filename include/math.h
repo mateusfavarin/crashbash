@@ -9,8 +9,12 @@
 #define MINUTES(x) (60 * SECONDS(x))
 #define HOURS(x) (60 * MINUTES(x))
 
-/* Fixed point math */
+/* Fixed point math used by the PSX SDK */
 #define PSYQ_FRACTIONAL_BITS 12
+#define PSYQ_FP_MULT(x, y) (((x) * (y)) >> PSYQ_FRACTIONAL_BITS)
+#define PSYQ_FP_DIV(x, y) (((x) << PSYQ_FRACTIONAL_BITS) / (y))
+
+/* Fixed point math used by Bash's internal functions */
 #define FRACTIONAL_BITS 8
 #define FP_ONE (1 << FRACTIONAL_BITS)
 #define FP(x) ((s32)(((float)(x)) * FP_ONE))
@@ -51,6 +55,12 @@
 #define ANG_360 0x1000
 #define ANG_MOD(x) ((x) & (ANG_360 - 1))
 #define ANG(x) ((s32)((((float)(x)) * 0x1000) / 360))
+/*
+    Despite having sine and cossine data, the game uses the cossine
+    for the angle calculation, deriving the sine as cos(x - 90)
+*/
+#define SIN(x) (_trigTable[ANG_MOD((x) - ANG_90)].cos)
+#define COS(x) (_trigTable[ANG_MOD(x)].cos)
 
 /* Structures */
 typedef struct Vec3
@@ -74,6 +84,13 @@ typedef struct Rect
     s32 x2;
     s32 z2;
 } Rect;
+
+typedef struct Circle
+{
+    s16 x;
+    s16 z;
+    s16 radius;
+} Circle;
 
 typedef struct TrigTable
 {

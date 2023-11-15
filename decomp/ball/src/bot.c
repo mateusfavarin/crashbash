@@ -1,34 +1,35 @@
 #include <types.h>
 #include <controller.h>
 #include <kernel.h>
-#include <level.h>
+#include <minigame.h>
 #include <player.h>
 #include <bot.h>
-#include <ball.h>
+#include <entity.h>
 #include <extern.h>
+#include "ball_extern.h"
 
 #define MAX_DIST 0x7fffff
 
 const PlayerAdjacencyList playerAdjacencyList[NUM_PLAYERS] = {
     [0] = {
-        .pRightPlayerID = &_PLAYER_3_ID,
-        .pMiddlePlayerID = &_PLAYER_1_ID,
-        .pLeftPlayerID = &_PLAYER_4_ID
+        .pRightPlayerID = &_Ball_PLAYER_3_ID,
+        .pMiddlePlayerID = &_Ball_PLAYER_1_ID,
+        .pLeftPlayerID = &_Ball_PLAYER_4_ID
     },
     [1] = {
-        .pRightPlayerID = &_PLAYER_4_ID,
-        .pMiddlePlayerID = &_PLAYER_2_ID,
-        .pLeftPlayerID = &_PLAYER_3_ID
+        .pRightPlayerID = &_Ball_PLAYER_4_ID,
+        .pMiddlePlayerID = &_Ball_PLAYER_2_ID,
+        .pLeftPlayerID = &_Ball_PLAYER_3_ID
     },
     [2] = {
-        .pRightPlayerID = &_PLAYER_2_ID,
-        .pMiddlePlayerID = &_PLAYER_3_ID,
-        .pLeftPlayerID = &_PLAYER_1_ID
+        .pRightPlayerID = &_Ball_PLAYER_2_ID,
+        .pMiddlePlayerID = &_Ball_PLAYER_3_ID,
+        .pLeftPlayerID = &_Ball_PLAYER_1_ID
     },
     [3] = {
-        .pRightPlayerID = &_PLAYER_1_ID,
-        .pMiddlePlayerID = &_PLAYER_4_ID,
-        .pLeftPlayerID = &_PLAYER_2_ID
+        .pRightPlayerID = &_Ball_PLAYER_1_ID,
+        .pMiddlePlayerID = &_Ball_PLAYER_4_ID,
+        .pLeftPlayerID = &_Ball_PLAYER_2_ID
     }
 };
 
@@ -156,34 +157,30 @@ static inline u32 TestBallCrossedLine(s32 prevPos, s32 nextPos, s32 p1, s32 p2)
 static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredictedPos, s32 ballAngle, const Rect * pLines)
 {
     s32 cornerIndex;
-    if (playerID == _PLAYER_1_ID)
+    if (playerID == _Ball_PLAYER_1_ID)
     {
         cornerIndex = PLAYER_1;
     }
-    if (playerID == _PLAYER_2_ID)
+    if (playerID == _Ball_PLAYER_2_ID)
     {
         cornerIndex = PLAYER_2;
     }
-    if (playerID ==  _PLAYER_3_ID)
+    if (playerID ==  _Ball_PLAYER_3_ID)
     {
         cornerIndex = PLAYER_3;
     }
-    if (playerID == _PLAYER_4_ID)
+    if (playerID == _Ball_PLAYER_4_ID)
     {
         cornerIndex = PLAYER_4;
     }
 
     Rect line = pLines[cornerIndex];
-    s32 angleDistortionFactor = Max(MAX_BOT_QUALITY - (_botDifficulty[playerID].quality + _defaultChallengeQuality), 0);
+    s32 angleDistortionFactor = Max(MAX_BOT_QUALITY - (_botDifficulty[playerID].quality + _Ball_defaultChallengeQuality), 0);
     s32 angleDistortion = angleDistortionData[angleDistortionFactor];
     s32 predictedDistortion = Rand(angleDistortion);
     s32 predictedAngle = ballAngle + (predictedDistortion - angleDistortion);
-    /*
-        Despite having sine and cossine data, the game uses the cossine
-        for the angle calculation, deriving the sine as cos(x - 90)
-    */
-    pPredictedPos->x = pBallPos->x - _trigTable[ANG_MOD(predictedAngle - ANG_90)].cos;
-    pPredictedPos->z = pBallPos->z - _trigTable[ANG_MOD(predictedAngle)].cos;
+    pPredictedPos->x = pBallPos->x - SIN(predictedAngle);
+    pPredictedPos->z = pBallPos->z - COS(predictedAngle);
 
     if ((!TestBallCrossedLine(pBallPos->x, pPredictedPos->x, line.x1, line.x2)) ||
         (!TestBallCrossedLine(pBallPos->z, pPredictedPos->z, line.z1, line.z2)))
@@ -435,12 +432,12 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
     {
         return false;
     }
-    BallLinkedList * pBallList = _pBallLinkedList;
-    BallLinkedList * pSelectedBall = nullptr;
+    EntityLinkedList * pBallList = _pBallLinkedList;
+    EntityLinkedList * pSelectedBall = nullptr;
     while (pBallList)
     {
-        Object * pBallObject = pBallList->pBallObject;
-        Ball * pBall = pBallList->pBall;
+        Object * pBallObject = pBallList->pEntityObject;
+        Entity * pBall = pBallList->pEntity;
         if ((pBallObject) && (pBall) && (pBall->color != RED_BALL))
         {
             s32 xDist = pPlayer->pos.x - pBallObject->pos.x;
@@ -448,7 +445,7 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
             if (((xDist * xDist) + (zDist * zDist)) < (maxDistance * maxDistance))
             {
                 s32 distAngle = _ArcTan(xDist, zDist);
-                s32 shotAngle = SubtractAngles(distAngle, pm.pKart->angle);
+                s32 shotAngle = SubtractAngles(distAngle, pm.pPlayerPhysics->angle);
                 if (enemyID == NO_PLAYER)
                 {
                     if ((shotAngle > minAngle) && (shotAngle < maxAngle))
@@ -479,7 +476,7 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
     {
         if (_playersCampaign != SOLO)
         {
-            Object * pBallObject = pSelectedBall->pBallObject;
+            Object * pBallObject = pSelectedBall->pEntityObject;
             s32 xDist = pPlayer->pos.x - pBallObject->pos.x;
             s32 zDist = pPlayer->pos.z - pBallObject->pos.z;
             s32 distAngle = _ArcTan(xDist, zDist);
@@ -562,18 +559,18 @@ void Bot_onUpdate(s32 playerID)
         pBot->enemyID = PickEnemy(playerID);
     }
 
-    BallLinkedList * pBallList = _pBallLinkedList;
+    EntityLinkedList * pBallList = _pBallLinkedList;
     Vec3 predictedBallPos;
     s32 xTarget = 0;
     s32 zTarget = 0;
     s32 minDistSquared = MAX_DIST;
     while (pBallList)
     {
-        Object * pBallObject = pBallList->pBallObject;
-        Ball * pBall = pBallList->pBall;
+        Object * pBallObject = pBallList->pEntityObject;
+        Entity * pBall = pBallList->pEntity;
         if ((pBallObject) && (pBall) && (pBall->state == 1)) // TODO: figure out ball->state and make it an Enum
         {
-            BallPhysics * pBallPhysics = _GetStructure(pBallList, 0x800);
+            EntityPhysics * pBallPhysics = _GetStructure(pBallList, 0x800);
             if ((pBallPhysics) &&
                 (PredictBallCrossingLine(playerID, &pBallObject->pos, &predictedBallPos, pBallPhysics->angle, goalLine)))
             {
@@ -592,15 +589,15 @@ void Bot_onUpdate(s32 playerID)
     if (pBot->enemyID != NO_PLAYER)
     {
         s32 oppositeBot = PLAYER_1;
-        if (playerID == _PLAYER_1_ID)
+        if (playerID == _Ball_PLAYER_1_ID)
         {
             oppositeBot = PLAYER_2;
         }
-        else if (playerID == _PLAYER_3_ID)
+        else if (playerID == _Ball_PLAYER_3_ID)
         {
             oppositeBot = PLAYER_4;
         }
-        else if (playerID == _PLAYER_4_ID)
+        else if (playerID == _Ball_PLAYER_4_ID)
         {
             oppositeBot = PLAYER_3;
         }
@@ -614,13 +611,13 @@ void Bot_onUpdate(s32 playerID)
             i = 2;
 
         s32 posAdjustFactor = targetPosAdjustFactor[i];
-        if (playerID == _PLAYER_1_ID)
+        if (playerID == _Ball_PLAYER_1_ID)
             xTarget += posAdjustFactor;
-        else if (playerID == _PLAYER_2_ID)
+        else if (playerID == _Ball_PLAYER_2_ID)
             xTarget -= posAdjustFactor;
-        else if (playerID == _PLAYER_3_ID)
+        else if (playerID == _Ball_PLAYER_3_ID)
             xTarget -= posAdjustFactor; // Probably a typo, should be zTarget += posAdjustFactor
-        else if (playerID == _PLAYER_4_ID)
+        else if (playerID == _Ball_PLAYER_4_ID)
             zTarget -= posAdjustFactor;
     }
 
@@ -650,7 +647,7 @@ void Bot_onUpdate(s32 playerID)
     {
         case BOTSTATE_DEFEND:
             s32 botQuality = _botDifficulty[playerID].quality;
-            s32 qualityDist = Max((botQuality * 16) - _defaultChallengeQuality, 1);
+            s32 qualityDist = Max((botQuality * 16) - _Ball_defaultChallengeQuality, 1);
             s32 randDist = qualityDist + Rand(qualityDist) + FP(1);
             if (_levelID == LEVELID_BEACH_BALL)
             {
@@ -679,7 +676,7 @@ void Bot_onUpdate(s32 playerID)
                     }
                     if (ShouldShootBall(playerID, pBot->enemyID, randDist, ANG(-45), ANG(45), isAggro))
                     {
-                        if ((!(_minigameMode & MINIGAME_CRYSTAL)) || (_unk_800c1f0c))
+                        if ((!(_minigameMode & MINIGAME_CRYSTAL)) || (_Ball_unk_800c1f0c))
                         {
                             BotShootBall(pBot);
                         }
@@ -700,12 +697,12 @@ void Bot_onUpdate(s32 playerID)
             if (minDist)
             {
                 s32 targetDist = pPlayer->pos.z - zTarget;
-                if ((playerID == _PLAYER_1_ID) || (playerID == _PLAYER_2_ID))
+                if ((playerID == _Ball_PLAYER_1_ID) || (playerID == _Ball_PLAYER_2_ID))
                 {
                     targetDist = pPlayer->pos.x - xTarget;
                 }
                 targetDist = Abs(targetDist);
-                s32 noiseDist = Abs(targetDist + ((botQuality + _defaultChallengeQuality) * MAX_BOT_QUALITY));
+                s32 noiseDist = Abs(targetDist + ((botQuality + _Ball_defaultChallengeQuality) * MAX_BOT_QUALITY));
                 if (noiseDist > FP(2.5))
                 {
                     if (noiseDist > minDist)
@@ -772,7 +769,7 @@ void Bot_onUpdate(s32 playerID)
             break;
         default: // Wander around in the center of the map
             pBot->targetPos = pPlayer->pos;
-            if ((playerID == _PLAYER_1_ID) || (playerID == _PLAYER_2_ID))
+            if ((playerID == _Ball_PLAYER_1_ID) || (playerID == _Ball_PLAYER_2_ID))
             {
                 pBot->targetPos.x = Rand(FP(4)) - FP(2);
             }
