@@ -79,7 +79,7 @@ typedef struct PlayerMetadata
     u8 field17_0x68[4];
 } PlayerMetadata;
 
-typedef struct PlayerAdjacencyList
+typedef const struct PlayerAdjacencyList
 {
     s32 * pRightPlayerID;
     s32 * pMiddlePlayerID;

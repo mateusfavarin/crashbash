@@ -6,7 +6,7 @@
 
 #define NUM_PILLARS 4
 
-typedef struct PillarDatabase
+typedef const struct PillarDatabase
 {
     Circle pos[NUM_PILLARS];
     Circle maybeUnused[NUM_PILLARS];
@@ -15,11 +15,11 @@ typedef struct PillarDatabase
 
 typedef struct PillarData
 {
-    Circle * pos;
-    Circle * maybeUnused;
-    Vec3 * ballSpawnPos;
+    const Circle * pos;
+    const Circle * maybeUnused;
+    const Vec3 * ballSpawnPos;
 } PillarData;
 
-extern const PillarDatabase pillarDatabase[NUM_PILLARS];
+extern PillarDatabase pillarDatabase[NUM_PILLARS];
 
 #endif

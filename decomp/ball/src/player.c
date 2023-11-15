@@ -9,7 +9,7 @@ u32 Player_onCollide(Object * pPlayer)
 {
     for (s32 i = 0; i < NUM_PILLARS; i++)
     {
-        Circle * pPillarPos = &_Ball_pillarData.pos[i];
+        const Circle * pPillarPos = &_Ball_pillarData.pos[i];
         s32 xDist = pPlayer->pos.x - pPillarPos->x;
         s32 zDist = pPlayer->pos.z - pPillarPos->z;
         s32 radius;

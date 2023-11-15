@@ -10,7 +10,7 @@
 
 #define MAX_DIST 0x7fffff
 
-const PlayerAdjacencyList playerAdjacencyList[NUM_PLAYERS] = {
+static PlayerAdjacencyList playerAdjacencyList[NUM_PLAYERS] = {
     [0] = {
         .pRightPlayerID = &_Ball_PLAYER_3_ID,
         .pMiddlePlayerID = &_Ball_PLAYER_1_ID,
@@ -33,7 +33,7 @@ const PlayerAdjacencyList playerAdjacencyList[NUM_PLAYERS] = {
     }
 };
 
-const Rect goalLine[NUM_PLAYERS] = {
+static const Rect goalLine[NUM_PLAYERS] = {
     [0] = {
         .x1 = FP(-8), .z1 = FP(-7.625),
         .x2 = FP(8), .z2 = FP(-7.625)
@@ -52,7 +52,7 @@ const Rect goalLine[NUM_PLAYERS] = {
     },
 };
 
-const Rect attackLine[NUM_PLAYERS] = {
+static const Rect attackLine[NUM_PLAYERS] = {
     [0] = {
         .x1 = FP(-5), .z1 = FP(-8),
         .x2 = FP(5), .z2 = FP(-8)
@@ -72,16 +72,16 @@ const Rect attackLine[NUM_PLAYERS] = {
 };
 
 // By degrees: 0, 45, 90, 135, 180, 225, 270, 315
-const u32 inputDirectionAngle[8] = {
+static const u32 inputDirectionAngle[8] = {
     BTN_UP, BTN_UP | BTN_RIGHT, BTN_RIGHT, BTN_RIGHT | BTN_DOWN,
     BTN_DOWN, BTN_LEFT | BTN_DOWN, BTN_LEFT, BTN_LEFT | BTN_UP
 };
 
 // LEFT, CENTER, RIGHT, CENTER
-const s32 targetPosAdjustFactor[NUM_PLAYERS] = {FP(-0.25), FP(0), FP(0.25), FP(0)};
+static const s32 targetPosAdjustFactor[NUM_PLAYERS] = {FP(-0.25), FP(0), FP(0.25), FP(0)};
 
 // 22.5 to 196.875 degrees
-const s32 angleDistortionData[MAX_BOT_QUALITY] = {
+static const s32 angleDistortionData[MAX_BOT_QUALITY] = {
     0x100, 0x140, 0x180, 0x1C0,
     0x200, 0x240, 0x280, 0x2C0,
     0x300, 0x340, 0x380, 0x3C0,
