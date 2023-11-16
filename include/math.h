@@ -70,12 +70,38 @@ typedef struct Vec3
     s32 z;
 } Vec3;
 
-typedef struct AngVec
+typedef struct Vec3Pad
+{
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 pad;
+} Vec3Pad;
+
+typedef struct SVec3
 {
     s16 x;
     s16 y;
     s16 z;
-} AngVec;
+    s16 pad;
+} SVec3;
+
+typedef struct Matrix
+{
+    s16 m[3][3];
+    s32 t[3];
+} Matrix;
+
+typedef struct ModelMatrix
+{
+    SVec3 rot;
+    SVec3 unk;
+    Vec3Pad scale;
+    Matrix rotMatrix;
+    u8 boolScaleModel;
+    u8 rotType;
+    u16 hasTransformed;
+} ModelMatrix;
 
 typedef struct Rect
 {

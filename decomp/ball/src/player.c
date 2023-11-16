@@ -13,6 +13,13 @@
 #define ACCEL_NORMAL_P2 42
 #define DEACCEL 18
 
+/*
+    @brief: Handles the player collision with the world geometry
+    @address: 0x800b42f4
+    @params:
+        @pPlayer
+    @return: bool
+*/
 u32 Player_onCollide(Object * pPlayer)
 {
     for (s32 i = 0; i < NUM_PILLARS; i++)
@@ -47,6 +54,12 @@ u32 Player_onCollide(Object * pPlayer)
     return false;
 }
 
+/*
+    @brief: Updates player speed per frame
+    @address: 0x800b558c
+    @params:
+        @playerID
+*/
 void Player_onSpeed(s32 playerID)
 {
     PlayerMetadata pm = _playerMetadata[playerID];

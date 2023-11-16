@@ -35,10 +35,7 @@ typedef struct Object
     u32 status;
     u8 field1_0x4[12];
     Vec3 pos;
-    AngVec rot;
-    u8 field8_0x22[10];
-    Vec3 scale;
-    u8 field12_0x38[40];
+    ModelMatrix modelMatrix;
     Vec3 prevPos;
     u8 field16_0x6c[30];
     s16 radius;
