@@ -7,8 +7,8 @@
 
 typedef enum EntityColor
 {
-    GRAY_BALL   = 0x1,
-    RED_BALL    = 0x2
+    GRAY_BALL   = 1,
+    RED_BALL    = 2
 } EntityColor;
 
 typedef struct Entity

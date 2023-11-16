@@ -25,9 +25,18 @@ typedef enum Buttons
     BTN_SHOULDERS   = BTN_L2 | BTN_L1 | BTN_R1 | BTN_R2,
 } Buttons;
 
+typedef enum ControllerFlags
+{
+    CONTROLLER_CONNECTED  = 0x1,
+    CONTROLLER_ANALOG_ON  = 0x2,
+    CONTROLLER_DIGITAL    = 0x4,
+    CONTROLLER_HAS_ANALOG = 0x8,
+} ControllerFlags;
+
 typedef struct Controller
 {
-    s32 field0_0x0[11];
+    u32 flags;
+    s32 field1_0x0[10];
     u32 isBotInput;
     u32 botInput;
     s32 field3_0x34;

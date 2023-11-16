@@ -7,12 +7,14 @@ _playersCampaign = 0x8005a680;
 _pBallLinkedList = 0x8005aa38;
 _trigTable = 0x80068bd4;
 _playerMetadata = 0x8009d52c;
+_FUNC_Player_onCollide = 0x8009d750;
 _botDifficulty = 0x8009d87c;
 _noHumansLeft = 0x8009d908;
 _unk_8009e0d8 = 0x8009e0d8;
 _unk_8009e0e2 = 0x8009e0e2;
 
 _Ball_pillarData = 0x800c1a7c;
+_Ball_playerSpeedCopy = 0x800c1ef0;
 _Ball_defaultChallengeQuality = 0x800c1f00;
 _Ball_unk_800c1f0c = 0x800c1f0c;
 _Ball_PLAYER_3_ID = 0x800c271c;

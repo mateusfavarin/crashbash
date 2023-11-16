@@ -48,10 +48,16 @@ typedef struct Object
 
 typedef struct PlayerPhysics
 {
-    u8 field0_0x0[20];
+    u8 field0_0x0[12];
+    s32 speed;
+    u8 field1_0x10[4];
     s16 angle;
     u16 field2_0x16;
     s16 angleCalc;
+    u16 field3_0x1a;
+    u8 field4_0x1c;
+    u8 field5_0x1d;
+    u8 field6_0x1e[12];
 } PlayerPhysics;
 
 typedef struct PlayerMetadata

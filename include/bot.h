@@ -8,12 +8,13 @@
 
 typedef enum BotState
 {
-    BOTSTATE_SET_TARGET      = 0x1,
-    BOTSTATE_DEFEND          = 0x3,
-    BOTSTATE_FOLLOW_TARGET   = 0x4,
-    BOTSTATE_TAUNT           = 0x5,
-    BOTSTATE_DO_NOTHING      = 0x14,
-    BOTSTATE_WAIT            = 0x15
+    BOTSTATE_NONE            = 0,
+    BOTSTATE_SET_TARGET      = 1,
+    BOTSTATE_DEFEND          = 3,
+    BOTSTATE_FOLLOW_TARGET   = 4,
+    BOTSTATE_TAUNT           = 5,
+    BOTSTATE_DO_NOTHING      = 20,
+    BOTSTATE_WAIT            = 21
 } BotState;
 
 typedef struct BotDifficulty
