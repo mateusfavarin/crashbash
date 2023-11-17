@@ -1,4 +1,0 @@
-ntsc_u, decomp, 0x8009d708, 0x0, src/hooks/hookPlayer_onSpeed.s
-ntsc_u, decomp, 0x8009d720, 0x0, src/hooks/hookBot_onUpdate.s
-ntsc_u, decomp, 0x8009d750, 0x0, src/hooks/hookPlayer_onCollide.s
-ntsc_u, decomp, 0x80200000, 0x0, src/*.c src/kernel.s
