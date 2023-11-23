@@ -1,5 +1,8 @@
+ntsc_u, exe_decomp, 0x8001a0d8, 0x0, core/hooks/hookAddPolyG4.s
+
 ntsc_u, ball_decomp, 0x8009d708, 0x0, ball/hooks/hookPlayer_onSpeed.s
 ntsc_u, ball_decomp, 0x8009d720, 0x0, ball/hooks/hookBot_onUpdate.s
 ntsc_u, ball_decomp, 0x8009d750, 0x0, ball/hooks/hookPlayer_onCollide.s
-ntsc_u, ball_decomp, 0x80200000, 0x0, ball/*.c ball/kernel.s
-ntsc_u, exe_decomp, 0x80300000, 0x0, core/*.c
+
+ntsc_u, exe_decomp, 0x80200000, 0x0, core/*.c core/kernel.s
+ntsc_u, ball_decomp, 0x80300000, 0x0, ball/*.c

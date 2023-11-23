@@ -1,0 +1,70 @@
+#include <types.h>
+#include <math.h>
+#include <gte.h>
+#include <gpu.h>
+#include <extern.h>
+#include <kernel.h>
+
+static ColorVec AdjustColorLightLevel(ColorVec color)
+{
+    if (_darknessLevel)
+    {
+        u32 lightLevel = PSYQ_FP_ONE - _darknessLevel;
+        color.r = PSYQ_FP_MULT(color.r, lightLevel);
+        color.g = PSYQ_FP_MULT(color.g, lightLevel);
+        color.b = PSYQ_FP_MULT(color.b, lightLevel);
+    }
+    return color;
+}
+
+PolyG4 * AddPolyG4(Sprite * sprite, u32 polyFlags)
+{
+    if (!(polyFlags & 0x8000)) // TODO: figure out polyFlags
+    {
+        return nullptr;
+    }
+    PolyG4 * pPrim;
+    GetPrimMem(pPrim, PolyG4);
+    for (s32 i = 0; i < QUAD_SIZE; i++)
+    {
+        pPrim->v[i].color = AdjustColorLightLevel(sprite->color[i]);
+    }
+    pPrim->texpage = (Texpage) {.code = 0xE1, .dither = 1};
+    pPrim->polyCode = (PolyCode) {.quad = 1, .gouraud = 1, .renderCode = 1};
+    if (polyFlags & 0x21) // TODO: figure out polyFlags
+    {
+        pPrim->texpage.self |= polyFlags & 0x60;
+        pPrim->polyCode.semiTransparency = 1;
+    }
+    pPrim->nop = 0;
+
+    u32 zIndex = 0;
+    if (polyFlags & 0x10000000)
+    {
+        s32 width = _pFrameBuffer->w;
+        for (s32 i = 0; i < QUAD_SIZE; i++)
+        {
+            pPrim->v[i].pos.x = (width * (_g_xOffset + sprite->pos[i].x)) / 640;
+            pPrim->v[i].pos.y = (_g_yOffset + sprite->pos[i].y) / 2;
+        }
+    }
+    else
+    {
+        gte_ldv3c(&sprite->pos[0]);
+        gte_rtpt();
+        gte_avsz3();
+        gte_stotz(&zIndex);
+        gte_stsxy0(&pPrim->v[0].pos);
+        gte_stsxy1(&pPrim->v[1].pos);
+        gte_stsxy2(&pPrim->v[2].pos);
+        gte_ldv0(&sprite->pos[3]);
+        gte_rtps();
+        gte_stsxy(&pPrim->v[3].pos);
+    }
+    zIndex = (zIndex + _zIndexOffset) / 2;
+    if (zIndex < _maxZIndex)
+    {
+        AddPrim(pPrim, zIndex);
+    }
+    return pPrim;
+}

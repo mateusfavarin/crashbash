@@ -11,6 +11,7 @@
 
 /* Fixed point math used by the PSX SDK */
 #define PSYQ_FRACTIONAL_BITS 12
+#define PSYQ_FP_ONE (1 << PSYQ_FRACTIONAL_BITS)
 #define PSYQ_FP_MULT(x, y) (((x) * (y)) >> PSYQ_FRACTIONAL_BITS)
 #define PSYQ_FP_DIV(x, y) (((x) << PSYQ_FRACTIONAL_BITS) / (y))
 
@@ -78,13 +79,19 @@ typedef struct Vec3Pad
     s32 pad;
 } Vec3Pad;
 
-typedef struct SVec3
+typedef struct SVec3Pad
 {
     s16 x;
     s16 y;
     s16 z;
     s16 pad;
-} SVec3;
+} SVec3Pad;
+
+typedef struct SVec2
+{
+    s16 x;
+    s16 y;
+} SVec2;
 
 typedef struct Matrix
 {
@@ -94,8 +101,8 @@ typedef struct Matrix
 
 typedef struct ModelMatrix
 {
-    SVec3 rot;
-    SVec3 unk;
+    SVec3Pad rot;
+    SVec3Pad unk;
     Vec3Pad scale;
     Matrix rotMatrix;
     u8 boolScaleModel;
@@ -105,11 +112,19 @@ typedef struct ModelMatrix
 
 typedef struct Rect
 {
+    s16 x;
+    s16 y;
+    s16 w;
+    s16 h;
+} Rect;
+
+typedef struct RectPoints
+{
     s32 x1;
     s32 z1;
     s32 x2;
     s32 z2;
-} Rect;
+} RectPoints;
 
 typedef struct Circle
 {

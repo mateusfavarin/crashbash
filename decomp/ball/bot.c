@@ -33,7 +33,7 @@ static PlayerAdjacencyList playerAdjacencyList[NUM_PLAYERS] = {
     }
 };
 
-static const Rect goalLine[NUM_PLAYERS] = {
+static const RectPoints goalLine[NUM_PLAYERS] = {
     [0] = {
         .x1 = FP(-8), .z1 = FP(-7.625),
         .x2 = FP(8), .z2 = FP(-7.625)
@@ -52,7 +52,7 @@ static const Rect goalLine[NUM_PLAYERS] = {
     },
 };
 
-static const Rect attackLine[NUM_PLAYERS] = {
+static const RectPoints attackLine[NUM_PLAYERS] = {
     [0] = {
         .x1 = FP(-5), .z1 = FP(-8),
         .x2 = FP(5), .z2 = FP(-8)
@@ -154,7 +154,7 @@ static inline u32 TestBallCrossedLine(s32 prevPos, s32 nextPos, s32 p1, s32 p2)
         @pLines: pointer to array[NUM_PLAYERS] of Rects describing the coordinates each line for each player
     @return: bool
 */
-static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredictedPos, s32 ballAngle, const Rect * pLines)
+static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredictedPos, s32 ballAngle, const RectPoints * pLines)
 {
     s32 cornerIndex;
     if (playerID == _Ball_PLAYER_1_ID)
@@ -174,7 +174,7 @@ static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredic
         cornerIndex = PLAYER_4;
     }
 
-    Rect line = pLines[cornerIndex];
+    RectPoints line = pLines[cornerIndex];
     s32 angleDistortionFactor = Max(MAX_BOT_QUALITY - (_botDifficulty[playerID].quality + _Ball_defaultChallengeQuality), 0);
     s32 angleDistortion = angleDistortionData[angleDistortionFactor];
     s32 predictedDistortion = Rand(angleDistortion);

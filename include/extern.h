@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <math.h>
+#include <gpu.h>
 #include <controller.h>
 #include <player.h>
 #include <bot.h>
@@ -15,6 +16,14 @@ EntityPhysics * _GetStructure(EntityLinkedList *list, u32 flags);
 void _SetBotInput(Controller * controller, u32 inputs);
 
 /* In game global variables */
+extern u32 _darknessLevel;
+extern OrderingTable * _pOT;
+extern OrderingTable * _pOTCopy;
+extern Rect * _pFrameBuffer;
+extern s32 _g_xOffset;
+extern s32 _g_yOffset;
+extern u16 _zIndexOffset;
+extern u16 _maxZIndex;
 extern u32 (* _FUNC_Player_onCollide)(Object *);
 extern u32 _levelID;
 extern u32 _gameFlags;
