@@ -4,24 +4,28 @@
 #include <types.h>
 
 /* Frame dependent math */
+
 #define FPS 30
 #define SECONDS(x) (((s32) ((float) (x))) * FPS)
 #define MINUTES(x) (60 * SECONDS(x))
 #define HOURS(x) (60 * MINUTES(x))
 
 /* Fixed point math used by the PSX SDK */
+
 #define PSYQ_FRACTIONAL_BITS 12
 #define PSYQ_FP_ONE (1 << PSYQ_FRACTIONAL_BITS)
 #define PSYQ_FP_MULT(x, y) (((x) * (y)) >> PSYQ_FRACTIONAL_BITS)
 #define PSYQ_FP_DIV(x, y) (((x) << PSYQ_FRACTIONAL_BITS) / (y))
 
 /* Fixed point math used by Bash's internal functions */
+
 #define FRACTIONAL_BITS 8
 #define FP_ONE (1 << FRACTIONAL_BITS)
 #define FP(x) ((s32)(((float)(x)) * FP_ONE))
 #define FP_TO_INT(x) ((x) >> FRACTIONAL_BITS)
 #define FP_MULT(x, y) (((x) * (y)) >> FRACTIONAL_BITS)
 #define FP_DIV(x, y) (((x) << FRACTIONAL_BITS) / (y))
+
 /*
     CSQRT (PSYQ square root fixed point implementation) uses 0x1000 as 1.0;
     Our 1.0 is 0x100, therefore we can use CSQRT to evaluate our own square root by manipulating the equation:
@@ -41,6 +45,7 @@
     which leads to: sqrt(x * y) = CSQRT(x * y) >> 6. Unfortunately I couldn't think of a better way to generalize the macro since
     it depends on the pre-computed result of sqrt(16), which is highly dependant on the size of FRACTIONAL_BITS
 */
+
 #define FP_SQRT(x) (_CSQRT((x) << (PSYQ_FRACTIONAL_BITS - FRACTIONAL_BITS)) >> (PSYQ_FRACTIONAL_BITS - FRACTIONAL_BITS))
 #if FRACTIONAL_BITS == 8
     #define SQRT_SQ(x) (_CSQRT((x)) >> 6)
@@ -51,19 +56,23 @@
 #endif
 
 /* Trigonometry */
+
 #define ANG_90  0x400
 #define ANG_180 0x800
 #define ANG_360 0x1000
 #define ANG_MOD(x) ((x) & (ANG_360 - 1))
 #define ANG(x) ((s32)((((float)(x)) * 0x1000) / 360))
+
 /*
     Despite having sine and cossine data, the game uses the cossine
     for the angle calculation, deriving the sine as cos(x - 90)
 */
+
 #define SIN(x) (_trigTable[ANG_MOD((x) - ANG_90)].cos)
 #define COS(x) (_trigTable[ANG_MOD(x)].cos)
 
 /* Structures */
+
 typedef struct Vec3
 {
     s32 x;
@@ -86,12 +95,6 @@ typedef struct SVec3Pad
     s16 z;
     s16 pad;
 } SVec3Pad;
-
-typedef struct SVec2
-{
-    s16 x;
-    s16 y;
-} SVec2;
 
 typedef struct Matrix
 {
@@ -146,6 +149,7 @@ typedef struct PRNG
 } PRNG;
 
 /* Inline functions */
+
 force_inline s32 Abs(s32 x)
 {
     if (x > 0)
@@ -181,6 +185,7 @@ force_inline void AdvanceSeed()
 }
 
 /* Functions */
+
 u32 Rand(u32 range);
 s32 SubtractAngles(s32 x, s32 y);
 s32 AbsSubtractAngles(s32 x, s32 y);

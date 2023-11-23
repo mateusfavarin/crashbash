@@ -5,6 +5,7 @@
 #include <math.h>
 
 /* Ordering Table */
+
 #define OT_SIZE 4096
 
 typedef struct PrimitiveMemory
@@ -31,6 +32,7 @@ typedef struct OrderingTable
 } OrderingTable;
 
 /* Primitives */
+
 #define TRI_SIZE  3
 #define QUAD_SIZE 4
 
@@ -43,7 +45,10 @@ typedef struct OrderingTable
     pPrim->tag.addr = _pOTCopy->ot[zIndex].addr; \
     _pOTCopy->ot[zIndex].addr = (u32) pPrim
 
-#define polyCode v[0].color.code
+#define fPolyCode color.code
+#define gPolyCode v[0].color.code
+#define polyClut v[0].clut
+#define polyTpage v[1].tpage
 
 typedef union Texpage
 {
@@ -90,11 +95,85 @@ typedef union ColorVec
     u32 self;
 } ColorVec;
 
+typedef union Point
+{
+    struct
+    {
+        s16 x;
+        s16 y;
+    };
+    s32 self;
+} Point;
+
+typedef union UV
+{
+    struct
+    {
+        u8 u;
+        u8 v;
+    };
+    u16 self;
+} UV;
+
+typedef union PolyTexpage
+{
+    struct
+    {
+        u16 x                : 4; /* x * 64 */
+        u16 y                : 1; /* y * 256 */
+        u16 semiTransparency : 2; /* (0=B/2+F/2, 1=B+F, 2=B-F, 3=B+F/4) */
+        u16 texpageColors    : 2; /* (0=4bit, 1=8bit, 2=15bit, 3=Reserved) */
+        u16 unused           : 2;
+        u16 y_VRAM_EXP       : 1; /* ununsed in retail */
+        u16 unused2          : 2;
+        u16 nop              : 2;
+    };
+    u16 self;
+} PolyTexpage;
+
+typedef union CLUT
+{
+    struct
+    {
+        u16 x   : 6; /* X/16  (ie. in 16-halfword steps) */
+        u16 y   : 9; /* 0-511 (ie. in 1-line steps) */
+        u16 nop : 1; /* Should be 0 */
+    };
+    u16 self;
+} CLUT;
+
+/* Vertex types */
+
 typedef struct GVertex
 {
     ColorVec color;
-    SVec2 pos;
+    Point pos;
 } GVertex;
+
+typedef struct FTVertex
+{
+    Point pos;
+    UV texCoords;
+    union
+    {
+        CLUT clut;
+        PolyTexpage tpage;
+    };
+} FTVertex;
+
+typedef struct GTVertex
+{
+    ColorVec color;
+    Point pos;
+    UV texCoords;
+    union
+    {
+        CLUT clut;
+        PolyTexpage tpage;
+    };
+} GTVertex;
+
+/* Primitive types */
 
 typedef struct PolyG3
 {
@@ -112,11 +191,51 @@ typedef struct PolyG4
     GVertex v[QUAD_SIZE];
 } PolyG4;
 
+typedef struct PolyGT3
+{
+    Tag tag;
+    GTVertex v[TRI_SIZE];
+} PolyGT3;
+
+typedef struct PolyGT4
+{
+    Tag tag;
+    GTVertex v[QUAD_SIZE];
+} PolyGT4;
+
+typedef struct PolyFT3
+{
+    Tag tag;
+    ColorVec color;
+    FTVertex v[TRI_SIZE];
+} PolyFT3;
+
+typedef struct PolyFT4
+{
+    Tag tag;
+    ColorVec color;
+    FTVertex v[QUAD_SIZE];
+} PolyFT4;
+
 /* Meshes */
-typedef struct QuadGouraud
+typedef struct Quad
+{
+    u8 field0_0x0[8];
+    u16 width;
+    u16 height;
+    u8 field3_0xc[4];
+    u8 widthRelated;
+    u8 field5_0x11[19];
+    PolyTexpage tpage;
+    CLUT clut;
+    UV texCoords[QUAD_SIZE];
+    u8 field9_0x30[8];
+} Quad;
+
+typedef struct ColoredRect
 {
     SVec3Pad pos[QUAD_SIZE];
     ColorVec color[QUAD_SIZE];
-} QuadGouraud;
+} ColoredRect;
 
 #endif

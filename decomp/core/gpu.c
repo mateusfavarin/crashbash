@@ -32,7 +32,7 @@ static ColorVec AdjustColorLightLevel(ColorVec color)
         @polyFlags
     @return: pointer to the PSX primitive
 */
-PolyG4 * AddPolyG4(QuadGouraud * quad, u32 polyFlags)
+PolyG4 * AddPolyG4(ColoredRect * quad, u32 polyFlags)
 {
     if (!(polyFlags & 0x8000)) // TODO: figure out polyFlags
     {
@@ -45,11 +45,11 @@ PolyG4 * AddPolyG4(QuadGouraud * quad, u32 polyFlags)
         pPrim->v[i].color = AdjustColorLightLevel(quad->color[i]);
     }
     pPrim->texpage = (Texpage) {.code = 0xE1, .dither = 1};
-    pPrim->polyCode = (PolyCode) {.quad = 1, .gouraud = 1, .renderCode = 1};
+    pPrim->gPolyCode = (PolyCode) {.quad = 1, .gouraud = 1, .renderCode = 1};
     if (polyFlags & 0x21) // TODO: figure out polyFlags
     {
         pPrim->texpage.self |= polyFlags & 0x60; // TODO: figure out polyFlags
-        pPrim->polyCode.semiTransparency = 1;
+        pPrim->gPolyCode.semiTransparency = 1;
     }
     pPrim->nop = 0;
 
