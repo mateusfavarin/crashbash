@@ -5,7 +5,7 @@
 #include <math.h>
 
 /* Ordering Table */
-#define OT_SIZE   4096
+#define OT_SIZE 4096
 
 typedef struct PrimitiveMemory
 {
@@ -18,8 +18,8 @@ typedef union Tag
 {
     struct
     {
-        u32 addr    : 24;
-        u32 size    : 8;
+        u32 addr : 24;
+        u32 size : 8;
     };
     u32 self;
 } Tag;
@@ -113,10 +113,10 @@ typedef struct PolyG4
 } PolyG4;
 
 /* Meshes */
-typedef struct Sprite
+typedef struct QuadGouraud
 {
     SVec3Pad pos[QUAD_SIZE];
     ColorVec color[QUAD_SIZE];
-} Sprite;
+} QuadGouraud;
 
 #endif
