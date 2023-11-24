@@ -1,0 +1,2 @@
+# Research
+Random snippets of code I wrote while trying to understand the inner workings of this game. They should be in blobs in the `buildList.txt`, so that anyone can uncomment their lines and effortlessly compile them.
