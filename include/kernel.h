@@ -7,10 +7,17 @@
 #if DEBUG == 0
     #define LOG(...)
 #else
-    #define LOG(...) printf(__VA_ARGS__)
+    // we need to make sure that our stack has enough space for printf
+    #define LOG(...) \
+        void * __pCurrStack__ = setStackPtr((void *) 0x80600000); \
+        printf(__VA_ARGS__); \
+        setStackPtr(__pCurrStack__)
+
 #endif
 
-int printf(char * format, ... );
+s32 printf(char * format, ... );
+void * getStackPtr();
+void * setStackPtr(void * p);
 
 force_inline void pcsx_putc(int c) {
     *((volatile char * const) 0x1f802080) = c;
