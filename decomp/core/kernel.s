@@ -14,5 +14,6 @@ printf:
     li    $t1, 0x3F
     lui   $t1, 0x8070
     lw    $ra, 0x4($t1)
-    jr    $ra
     lw    $sp, 0x0($t1)
+    jr    $ra
+    nop
