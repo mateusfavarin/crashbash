@@ -7,7 +7,7 @@
 #if DEBUG == 0
     #define LOG(...)
 #else
-    #define LOG(...) printf(__VA_ARGS__); // we need to make sure that our stack has enough space for printf
+    #define LOG(...) printf(__VA_ARGS__);
 
 #endif
 
