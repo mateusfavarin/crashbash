@@ -8,5 +8,4 @@ ntsc_u, exe_decomp, 0x80200000, 0x0, core/*.c core/kernel.s
 ntsc_u, ball_decomp, 0x80300000, 0x0, ball/*.c
 
 //ntsc_u, research_decomp, 0x80019da4, 0x0, research/hooks/hookFaceGen.s
-//ntsc_u, research_decomp, 0x800102a4, 0x0, research/hooks/nop.s
 //ntsc_u, research_decomp, 0x80400000, 0x0, research/*.c
