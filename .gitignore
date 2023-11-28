@@ -6,6 +6,7 @@ __pycache__/
 # IDE files
 .vs
 .vscode
+x64/
 
 # C files
 *.o
