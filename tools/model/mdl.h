@@ -21,7 +21,7 @@ private:
 	std::string m_outputPath;
 
 	MDLHeader m_header;
-	std::vector<Mesh *> m_meshList;
+	std::vector<Mesh> m_meshList;
 
 	void ReadHeader();
 	void LoadMeshes();

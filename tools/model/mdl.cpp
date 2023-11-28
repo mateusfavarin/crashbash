@@ -24,16 +24,15 @@ void MDL::LoadMeshes()
 	m_file.seekg(sizeof(m_header), std::ios::beg);
 	for (unsigned i = 0; i < m_header.numMeshes; i++)
 	{
-		Mesh * pMesh = new Mesh(m_outputPath, i, &m_file);
-		m_meshList.push_back(pMesh);
+		m_meshList.emplace_back(Mesh(m_outputPath, i, m_file));
 	}
 	m_file.seekg(0, std::ios::beg);
 }
 
 void MDL::ToObj()
 {
-	for (Mesh * pMesh : m_meshList)
+	for (Mesh &mesh : m_meshList)
 	{
-		pMesh->ToObj();
+		mesh.ToObj();
 	}
 }
