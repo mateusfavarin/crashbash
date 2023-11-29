@@ -4,6 +4,7 @@
 #include <vector>
 #include "primitives.h"
 #include "mesh.h"
+#include "anim.h"
 
 namespace fs = std::filesystem;
 
@@ -16,13 +17,17 @@ public:
 private:
 	fs::path m_path;
 	std::ifstream m_file;
+	std::streamoff m_fileBeg;
 
 	std::string m_name;
 	std::string m_outputPath;
 
 	MDLHeader m_header;
 	std::vector<Mesh> m_meshList;
+	std::vector<Anim> m_animList;
 
+	inline void FileSeekBeg(std::streamoff offset);
 	void ReadHeader();
 	void LoadMeshes();
+	void LoadAnims();
 };

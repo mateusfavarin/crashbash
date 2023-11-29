@@ -128,12 +128,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="anim.cpp" />
+    <ClCompile Include="filecomponent.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mdl.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mesh.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="anim.h" />
+    <ClInclude Include="filecomponent.h" />
     <ClInclude Include="primitives.h" />
     <ClInclude Include="mdl.h" />
   </ItemGroup>

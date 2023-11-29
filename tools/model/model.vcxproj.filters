@@ -27,12 +27,24 @@
     <ClCompile Include="mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="anim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filecomponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mdl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="primitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="anim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="filecomponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
