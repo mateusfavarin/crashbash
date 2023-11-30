@@ -12,37 +12,46 @@ MDL::MDL(fs::path mdlPath)
 
 	ReadHeader();
 	LoadMeshes();
+	LoadAnims();
 }
 
-inline void MDL::FileSeekBeg(std::streamoff offset = 0)
+inline void MDL::FileSeekRelative(std::streamoff offset)
 {
 	m_file.seekg(m_fileBeg + offset, std::ios::beg);
 }
 
+inline void MDL::FileSeekAbsolute(std::streamoff position)
+{
+	m_file.seekg(position, std::ios::beg);
+}
+
 void MDL::ReadHeader()
 {
-	FileSeekBeg();
+	FileSeekRelative();
 	m_file.read((char *) &m_header, sizeof(m_header));
 }
 
 void MDL::LoadMeshes()
 {
-	FileSeekBeg(sizeof(m_header));
+	FileSeekRelative(sizeof(m_header));
 	for (unsigned i = 0; i < m_header.numMeshes; i++)
 	{
-		Mesh mesh = Mesh(m_outputPath, i, m_file.tellg());
+		Mesh mesh = Mesh(m_outputPath, "mesh", i, m_file.tellg());
 		std::streamoff nextHeader = mesh.Load(m_file);
-		m_meshList.emplace_back(mesh);
-		FileSeekBeg(nextHeader);
+		m_meshList.push_back(mesh);
+		FileSeekAbsolute(nextHeader);
 	}
 }
 
 void MDL::LoadAnims()
 {
-	FileSeekBeg(offsetof(MDLHeader, animHeaderOffset) + m_header.animHeaderOffset);
+	FileSeekRelative(offsetof(MDLHeader, animHeaderOffset) + m_header.animHeaderOffset);
 	for (unsigned i = 0; i < m_header.numAnimations; i++)
 	{
-		m_animList.emplace_back(Anim());
+		Anim anim = Anim(m_outputPath, i, m_file.tellg());
+		std::streamoff nextHeader = anim.Load(m_file);
+		m_animList.push_back(anim);
+		FileSeekAbsolute(nextHeader);
 	}
 }
 
@@ -51,5 +60,9 @@ void MDL::ToObj()
 	for (Mesh &mesh : m_meshList)
 	{
 		mesh.ToObj();
+	}
+	for (Anim &anim : m_animList)
+	{
+		anim.ToObj();
 	}
 }

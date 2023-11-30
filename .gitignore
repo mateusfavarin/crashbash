@@ -42,3 +42,6 @@ games/settings.json
 
 # Executables
 *.exe
+
+# Bash files
+*.mdl

@@ -26,7 +26,8 @@ private:
 	std::vector<Mesh> m_meshList;
 	std::vector<Anim> m_animList;
 
-	inline void FileSeekBeg(std::streamoff offset);
+	inline void FileSeekRelative(std::streamoff offset = 0);
+	inline void FileSeekAbsolute(std::streamoff position);
 	void ReadHeader();
 	void LoadMeshes();
 	void LoadAnims();

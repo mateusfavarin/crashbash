@@ -1,75 +1,126 @@
-#include <string>
 #include "mesh.h"
 
-Mesh::Mesh(const std::string & outputPath, unsigned index, std::streamoff fileBeg) :
-	FileComponent(outputPath + "mesh_" + std::to_string(m_index) + ".obj", index, fileBeg)
+Mesh::Mesh(const std::string &outputPath, const std::string &meshType, unsigned index, std::streamoff fileBeg, std::streamoff animIndexPos, std::streamoff animDataPos)
+	: FileComponent(outputPath + meshType + "_" + std::to_string(index) + ".obj", index, fileBeg)
 {
+	m_animIndexPos = animIndexPos;
+	m_animDataPos = animDataPos;
+	m_isAnimated = (m_animIndexPos != 0) && (m_animDataPos != 0);
+	m_numVertexes = 0;
 	m_header = {};
 	m_vertexHeader = {};
 };
 
 std::streamoff Mesh::LoadHeader(std::ifstream &file)
 {
-	FileSeekBeg(file);
+	FileSeekRelative(file);
 	file.read((char *)&m_header, sizeof(m_header));
 	return file.tellg();
 }
 
-std::streamoff Mesh::LoadVertexEncode(std::ifstream &file)
+std::streamoff Mesh::LoadVertexCompression(std::ifstream &file)
 {
-	FileSeekBeg(file, offsetof(MeshHeader, vertexEncodeOffset) + m_header.vertexEncodeOffset);
+	FileSeekRelative(file, offsetof(MeshHeader, vertexCompressionOffset) + m_header.vertexCompressionOffset);
+	unsigned numVertexes = 0;
 	while (true)
 	{
-		VertexEncode ve;
+		VertexCompression ve;
 		file.read((char *)&ve, sizeof(ve));
 		if (ve.count == 0xFF)
 		{
 			break;
 		}
-		m_vertexEncodeList.push_back(ve);
+		numVertexes += 2 + ve.count;
+		m_vertexCompressionList.push_back(ve);
+	}
+	m_numVertexes = numVertexes;
+	return file.tellg();
+}
+
+std::streamoff Mesh::LoadAnimVertexIndex(std::ifstream &file)
+{
+	FileSeekAbsolute(file, m_animIndexPos);
+	file.read((char *)&m_vertexHeader, sizeof(m_vertexHeader));
+	m_vertexHeader.bbox.min.InvertCoords();
+	m_vertexHeader.bbox.max.InvertCoords();
+
+	uint16_t index;
+	for (unsigned i = 0; i < m_numVertexes; i++)
+	{
+		file.read((char *) &index, sizeof(index));
+		m_animVertexIndexList.push_back((index >> 2) * sizeof(Point));
 	}
 	return file.tellg();
 }
 
 std::streamoff Mesh::LoadVertexes(std::ifstream &file)
 {
-	FileSeekBeg(file, offsetof(MeshHeader, vertexListOffset) + m_header.vertexListOffset);
+	FileSeekRelative(file, offsetof(MeshHeader, vertexListOffset) + m_header.vertexListOffset);
 	file.read((char *)&m_vertexHeader, sizeof(m_vertexHeader));
-
 	m_vertexHeader.bbox.min.InvertCoords();
 	m_vertexHeader.bbox.max.InvertCoords();
 
-	Vertex v[TRI_VERTEX_COUNT];
+	Vertex v;
+	for (unsigned i = 0; i < m_numVertexes; i++)
+	{
+		file.read((char *) &v, sizeof(v));
+		v.InvertCoords();
+		m_vertexList.push_back(v);
+	}
+
+	return file.tellg();
+}
+
+void Mesh::LoadAnimVertexes(std::ifstream &file)
+{
+	Vertex v;
+	for (uint16_t &index : m_animVertexIndexList)
+	{
+		FileSeekAbsolute(file, m_animDataPos + index);
+		file.read((char *) &v, sizeof(v));
+		v.InvertCoords();
+		m_vertexList.push_back(v);
+	}
+}
+
+void Mesh::VertexesToTriangles()
+{
+	Vertex v[3];
 	bool flipTri;
-	unsigned vertexCount = 0;
-	for (VertexEncode ve : m_vertexEncodeList)
+	unsigned fileVertexCount = 0;
+	unsigned k = 0;
+	for (VertexCompression ve : m_vertexCompressionList)
 	{
 		flipTri = (ve.flag & 0x8) == 0;
-
-		file.read((char *)&v[0], sizeof(Vertex));
-		v[0].InvertCoords();
-		file.read((char *)&v[1], sizeof(Vertex));
-		v[1].InvertCoords();
+		v[0] = m_vertexList[k++];
+		v[1] = m_vertexList[k++];
 		for (unsigned i = 0; i < ve.count; i++)
 		{
-			file.read((char *)&v[2], sizeof(Vertex));
-			v[2].InvertCoords();
-			m_triList.emplace_back(Triangle(v, vertexCount + 1, flipTri));
+			v[2] = m_vertexList[k++];
+			m_triList.emplace_back(Triangle(v, fileVertexCount + 1, flipTri));
 
 			v[0] = v[1];
 			v[1] = v[2];
-			vertexCount += 3;
+			fileVertexCount += 3;
 			flipTri = !flipTri;
 		}
 	}
-	return file.tellg();
 }
 
 std::streamoff Mesh::Load(std::ifstream &file)
 {
 	std::streamoff headerEnd = LoadHeader(file);
-	LoadVertexEncode(file);
-	LoadVertexes(file);
+	LoadVertexCompression(file);
+	if (m_isAnimated)
+	{
+		LoadAnimVertexIndex(file);
+		LoadAnimVertexes(file);
+	}
+	else
+	{
+		LoadVertexes(file);
+	}
+	VertexesToTriangles();
 	return headerEnd;
 }
 

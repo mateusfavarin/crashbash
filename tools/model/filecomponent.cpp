@@ -7,7 +7,12 @@ FileComponent::FileComponent(const std::string &outputPath, unsigned index, std:
 	m_outputPath = outputPath;
 }
 
-void FileComponent::FileSeekBeg(std::ifstream &file, std::streamoff offset)
+void FileComponent::FileSeekRelative(std::ifstream &file, std::streamoff offset)
 {
 	file.seekg(m_fileBeg + offset, std::ios::beg);
+}
+
+void FileComponent::FileSeekAbsolute(std::ifstream &file, std::streamoff position)
+{
+	file.seekg(position, std::ios::beg);
 }

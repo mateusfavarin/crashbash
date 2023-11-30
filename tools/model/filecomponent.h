@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include <string>
+#include <iostream>
 
 class FileComponent
 {
@@ -10,7 +11,8 @@ public:
 	virtual void ToObj() = 0;
 
 protected:
-	void FileSeekBeg(std::ifstream &file, std::streamoff offset = 0);
+	void FileSeekRelative(std::ifstream &file, std::streamoff offset = 0);
+	void FileSeekAbsolute(std::ifstream &file, std::streamoff position);
 
 	std::string m_outputPath;
 	unsigned m_index;
