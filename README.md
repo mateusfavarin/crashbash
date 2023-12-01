@@ -14,6 +14,7 @@ This project will adopt the [Ship of Theseus](https://en.wikipedia.org/wiki/Ship
 * `plugins`: psx-modding-toolchain plugin file, currently does nothing for this project.
 * `scripts`: multiple scripts that helps the reverse engineering project.
 * `symbols`: linker scripts containing the external symbols from in-game variables and functions.
+* `tools`: code for independent programs used to explore the Bash files.
 
 ## Progress
 ### Ballistics
