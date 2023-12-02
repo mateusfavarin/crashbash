@@ -19,11 +19,7 @@ struct Point
 	int16_t y;
 	int16_t z;
 
-	void InvertCoords()
-	{
-		y *= -1;
-		z *= -1;
-	}
+	void InvertCoords();
 };
 
 struct BBox
@@ -39,18 +35,7 @@ struct Vertex
 	int16_t z;
 	uint16_t pad;
 
-	void InvertCoords()
-	{
-		y *= -1;
-		z *= -1;
-	}
-};
-
-struct TriVertex
-{
-	double x;
-	double y;
-	double z;
+	void InvertCoords();
 };
 
 struct Color
@@ -61,8 +46,11 @@ struct Color
 	uint8_t pad;
 };
 
-struct TriColor
+struct TriVertex
 {
+	double x;
+	double y;
+	double z;
 	double r;
 	double g;
 	double b;
@@ -74,60 +62,12 @@ struct Triangle
 {
 	TriVertex v[TRI_VERTEX_COUNT];
 	unsigned vertexOffset;
-	TriColor vcolor[TRI_VERTEX_COUNT];
 	bool isTextured;
 	uint16_t semiTransparencyMode;
 
-	Triangle(Vertex * v, unsigned vertexOffset, Color * vcolor, bool isTextured, bool flipTri)
-	{
-		this->v[0].x = ((double)v[0].x) / TRI_SCALE;
-		this->v[0].y = ((double)v[0].y) / TRI_SCALE;
-		this->v[0].z = ((double)v[0].z) / TRI_SCALE;
-		if (flipTri)
-		{
-			this->v[1].x = ((double)v[2].x) / TRI_SCALE;
-			this->v[1].y = ((double)v[2].y) / TRI_SCALE;
-			this->v[1].z = ((double)v[2].z) / TRI_SCALE;
-			this->v[2].x = ((double)v[1].x) / TRI_SCALE;
-			this->v[2].y = ((double)v[1].y) / TRI_SCALE;
-			this->v[2].z = ((double)v[1].z) / TRI_SCALE;
-		}
-		else
-		{
-			this->v[1].x = ((double)v[1].x) / TRI_SCALE;
-			this->v[1].y = ((double)v[1].y) / TRI_SCALE;
-			this->v[1].z = ((double)v[1].z) / TRI_SCALE;
-			this->v[2].x = ((double)v[2].x) / TRI_SCALE;
-			this->v[2].y = ((double)v[2].y) / TRI_SCALE;
-			this->v[2].z = ((double)v[2].z) / TRI_SCALE;
-		}
-		this->vertexOffset = vertexOffset;
-
-		for (unsigned i = 0; i < TRI_VERTEX_COUNT; i++)
-		{
-			this->vcolor[i].r = ((double) vcolor[i].r) / 255.0;
-			this->vcolor[i].g = ((double) vcolor[i].g) / 255.0;
-			this->vcolor[i].b = ((double) vcolor[i].b) / 255.0;
-		}
-		this->isTextured = isTextured;
-		this->semiTransparencyMode = 0;
-	}
-
-	void SetSemiTransparencyMode(uint8_t g)
-	{
-		this->semiTransparencyMode = (g >> 5) & 0b11;
-	}
+	Triangle(Vertex * v, unsigned vertexOffset, Color * vcolor, bool isTextured, bool flipTri);
+	void SetSemiTransparencyMode(uint8_t g);
 };
-
-static std::ostream & operator<<(std::ostream &out, const Triangle &t)
-{
-	for (int i = 0; i < TRI_VERTEX_COUNT; i++)
-	{
-		out << "v " << t.v[i].x << " " << t.v[i].y << " " << t.v[i].z << " ";
-		out << t.vcolor[i].r << " " << t.vcolor[i].g << " " << t.vcolor[i].b << std::endl;
-	}
-	return out << "f " << t.vertexOffset << " " << t.vertexOffset + 1 << " " << t.vertexOffset + 2 << std::endl;
-}
 
 struct VertexCompression
 {
@@ -189,15 +129,8 @@ struct AnimInterpolation
 	unsigned to;
 	double rate;
 
-	AnimInterpolation(unsigned from, unsigned to, uint32_t interpolationRate)
-	{
-		this->from = from;
-		this->to = to;
-		this->rate = ((double) interpolationRate * 100) / 4096.0;
-	}
+	AnimInterpolation(unsigned from, unsigned to, uint32_t interpolationRate);
 };
 
-static std::ostream &operator<<(std::ostream &out, const AnimInterpolation &animItpl)
-{
-	return out << animItpl.from << " | " << animItpl.to << " | " << animItpl.rate << "%" << std::endl;
-}
+std::ostream &operator<<(std::ostream &out, const Triangle &t);
+std::ostream &operator<<(std::ostream &out, const AnimInterpolation &animItpl);

@@ -100,8 +100,8 @@ void Mesh::LoadAnimVertexes(std::ifstream &file)
 
 void Mesh::VertexesToTriangles(std::ifstream &file)
 {
-	Vertex v[3];
-	Color color[3];
+	Vertex v[TRI_VERTEX_COUNT];
+	Color color[TRI_VERTEX_COUNT];
 	bool flipTri;
 	bool isTextured;
 	unsigned fileVertexCount = 0;
