@@ -7,11 +7,13 @@
 class Anim : public FileComponent
 {
 public:
-	Anim(const std::string &outputPath, unsigned index, std::streamoff fileBeg);
+	Anim(const std::string &outputPath, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos);
 	std::streamoff Load(std::ifstream &file) override;
 	void ToObj() override;
 
 private:
+	std::streamoff m_vcolorDataPos;
+
 	AnimHeader m_header;
 	unsigned m_numKeyframes;
 	std::unordered_map<std::streamoff, unsigned> m_keyframeMeshIndex;

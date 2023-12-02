@@ -1,8 +1,9 @@
 #include "anim.h"
 
-Anim::Anim(const std::string &outputPath, unsigned index, std::streamoff fileBeg) :
+Anim::Anim(const std::string &outputPath, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos) :
 	FileComponent(outputPath + "anim_" + std::to_string(index) + "_", index, fileBeg)
 {
+	m_vcolorDataPos = vcolorDataPos;
 	m_numKeyframes = 0;
 	m_header = {};
 };
@@ -35,14 +36,14 @@ void Anim::LoadKeyframes(std::ifstream &file)
 		if (!m_keyframeMeshIndex.contains(animIndexStartPos))
 		{
 			m_keyframeMeshIndex[animIndexStartPos] = ++m_numKeyframes;
-			Mesh mesh = Mesh(m_outputPath, "keyframe", m_numKeyframes, meshBeg, animIndexStartPos, animDataPos);
+			Mesh mesh = Mesh(m_outputPath, "keyframe", m_numKeyframes, meshBeg, m_vcolorDataPos, animIndexStartPos, animDataPos);
 			mesh.Load(file);
 			m_meshList.push_back(mesh);
 		}
 		if ((keyframeHeader.interpolationRate != 0) && (!m_keyframeMeshIndex.contains(animIndexEndPos)))
 		{
 			m_keyframeMeshIndex[animIndexEndPos] = ++m_numKeyframes;
-			Mesh mesh = Mesh(m_outputPath, "keyframe", m_numKeyframes, meshBeg, animIndexEndPos, animDataPos);
+			Mesh mesh = Mesh(m_outputPath, "keyframe", m_numKeyframes, meshBeg, m_vcolorDataPos, animIndexEndPos, animDataPos);
 			mesh.Load(file);
 			m_meshList.push_back(mesh);
 		}

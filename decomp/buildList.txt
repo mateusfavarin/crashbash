@@ -7,5 +7,6 @@ ntsc_u, ball_decomp, 0x8009d750, 0x0, ball/hooks/hookPlayer_onCollide.s
 ntsc_u, exe_decomp, 0x80200000, 0x0, core/*.c core/kernel.s
 ntsc_u, ball_decomp, 0x80300000, 0x0, ball/*.c
 
+//ntsc_u, research_decomp, 0x80019da4, 0x0, research/hooks/hookDebugPrim.s
 //ntsc_u, research_decomp, 0x80019da4, 0x0, research/hooks/hookFaceGen.s
 //ntsc_u, research_decomp, 0x80400000, 0x0, research/*.c

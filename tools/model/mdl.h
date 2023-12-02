@@ -18,6 +18,7 @@ private:
 	fs::path m_path;
 	std::ifstream m_file;
 	std::streamoff m_fileBeg;
+	std::streamoff m_vcolorDataPos;
 
 	std::string m_name;
 	std::string m_outputPath;
@@ -28,7 +29,7 @@ private:
 
 	inline void FileSeekRelative(std::streamoff offset = 0);
 	inline void FileSeekAbsolute(std::streamoff position);
-	void ReadHeader();
-	void LoadMeshes();
-	void LoadAnims();
+	std::streamoff ReadHeader();
+	std::streamoff LoadMeshes();
+	std::streamoff LoadAnims();
 };

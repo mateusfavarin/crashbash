@@ -2,6 +2,17 @@
 #include <ostream>
 #include <stdint.h>
 
+enum VertexEncodeFlag : uint8_t
+{
+	Untextured = 0x1,
+};
+
+enum VcolorFlag : uint16_t
+{
+	SemiTransparent = 0x8000,
+	IDBits = 0x1FFF,
+};
+
 struct Point
 {
 	int16_t x;
@@ -42,14 +53,32 @@ struct TriVertex
 	double z;
 };
 
+struct Color
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t pad;
+};
+
+struct TriColor
+{
+	double r;
+	double g;
+	double b;
+};
+
 #define TRI_VERTEX_COUNT 3
 #define TRI_SCALE 256.0
 struct Triangle
 {
 	TriVertex v[TRI_VERTEX_COUNT];
 	unsigned vertexOffset;
+	TriColor vcolor[TRI_VERTEX_COUNT];
+	bool isTextured;
+	uint16_t semiTransparencyMode;
 
-	Triangle(Vertex * v, unsigned vertexOffset, bool flipTri)
+	Triangle(Vertex * v, unsigned vertexOffset, Color * vcolor, bool isTextured, bool flipTri)
 	{
 		this->v[0].x = ((double)v[0].x) / TRI_SCALE;
 		this->v[0].y = ((double)v[0].y) / TRI_SCALE;
@@ -73,6 +102,20 @@ struct Triangle
 			this->v[2].z = ((double)v[2].z) / TRI_SCALE;
 		}
 		this->vertexOffset = vertexOffset;
+
+		for (unsigned i = 0; i < TRI_VERTEX_COUNT; i++)
+		{
+			this->vcolor[i].r = ((double) vcolor[i].r) / 255.0;
+			this->vcolor[i].g = ((double) vcolor[i].g) / 255.0;
+			this->vcolor[i].b = ((double) vcolor[i].b) / 255.0;
+		}
+		this->isTextured = isTextured;
+		this->semiTransparencyMode = 0;
+	}
+
+	void SetSemiTransparencyMode(uint8_t g)
+	{
+		this->semiTransparencyMode = (g >> 5) & 0b11;
 	}
 };
 
@@ -80,7 +123,8 @@ static std::ostream & operator<<(std::ostream &out, const Triangle &t)
 {
 	for (int i = 0; i < TRI_VERTEX_COUNT; i++)
 	{
-		out << "v " << t.v[i].x << " " << t.v[i].y << " " << t.v[i].z << " 0.7 0.7 0.7" << std::endl;
+		out << "v " << t.v[i].x << " " << t.v[i].y << " " << t.v[i].z << " ";
+		out << t.vcolor[i].r << " " << t.vcolor[i].g << " " << t.vcolor[i].b << std::endl;
 	}
 	return out << "f " << t.vertexOffset << " " << t.vertexOffset + 1 << " " << t.vertexOffset + 2 << std::endl;
 }
@@ -93,7 +137,9 @@ struct VertexCompression
 
 struct MDLHeader
 {
-	uint8_t unk0x0[0x28]; // 0x0
+	uint8_t unk0x0[0x20]; // 0x0
+	uint32_t vcolorDataOffset; // 0x20
+	uint32_t unk0x24; // 0x24
 	uint32_t unk0x28; // 0x28
 	uint8_t unk0x2C[0x14]; // 0x2C
 	uint32_t numAnimations; // 0x40
@@ -107,7 +153,9 @@ struct MeshHeader
 	uint8_t unk_0x0[0x10]; // 0x0
 	uint32_t vertexListOffset; // 0x10
 	uint32_t vertexCompressionOffset; // 0x14
-	uint8_t unk0x18[0x1C]; // 0x18
+	uint8_t unk0x18[0x8]; // 0x18
+	uint32_t vcolorFlagsOffset; // 0x20
+	uint8_t unk0x24[0x10]; // 0x24
 }; static_assert(sizeof(MeshHeader) == 0x34);
 
 struct VertexHeader
