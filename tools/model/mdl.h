@@ -1,34 +1,25 @@
 #pragma once
-#include <filesystem>
-#include <fstream>
 #include <vector>
-#include "primitives.h"
+#include "filemanager.h"
+#include "tex.h"
 #include "mesh.h"
 #include "anim.h"
 
-namespace fs = std::filesystem;
-
-class MDL
+class MDL : public FileManager
 {
 public:
-	MDL(fs::path mdlPath);
-	void ToObj();
+	MDL(fs::path mdlPath, fs::path texPath);
+	void Export() override;
 
 private:
-	fs::path m_path;
-	std::ifstream m_file;
-	std::streamoff m_fileBeg;
 	std::streamoff m_vcolorDataPos;
+	std::streamoff m_uvDataPos;
 
-	std::string m_name;
-	std::string m_outputPath;
-
+	Tex m_tex;
 	MDLHeader m_header;
 	std::vector<Mesh> m_meshList;
 	std::vector<Anim> m_animList;
 
-	inline void FileSeekRelative(std::streamoff offset = 0);
-	inline void FileSeekAbsolute(std::streamoff position);
 	std::streamoff ReadHeader();
 	std::streamoff LoadMeshes();
 	std::streamoff LoadAnims();

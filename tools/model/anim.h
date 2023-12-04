@@ -3,16 +3,20 @@
 #include "primitives.h"
 #include "filecomponent.h"
 #include "mesh.h"
+#include "tex.h"
 
 class Anim : public FileComponent
 {
 public:
-	Anim(const std::string &outputPath, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos);
+	Anim(const std::string &outputPath, const std::string &name, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos, std::streamoff uvDataPos);
 	std::streamoff Load(std::ifstream &file) override;
-	void ToObj() override;
+	void LoadKeyframes(std::ifstream &file, Tex &tex);
+	void Export() override;
 
 private:
+	std::string m_name;
 	std::streamoff m_vcolorDataPos;
+	std::streamoff m_uvDataPos;
 
 	AnimHeader m_header;
 	unsigned m_numKeyframes;
@@ -22,5 +26,4 @@ private:
 	std::vector<Mesh> m_meshList;
 
 	std::streamoff LoadHeader(std::ifstream &file);
-	void LoadKeyframes(std::ifstream &file);
 };

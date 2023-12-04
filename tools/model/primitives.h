@@ -2,9 +2,12 @@
 #include <ostream>
 #include <stdint.h>
 
+#define BITS_PER_BYTE 8
+
 enum VertexEncodeFlag : uint8_t
 {
 	Untextured = 0x1,
+	FlipTriangle = 0x8,
 };
 
 enum VcolorFlag : uint16_t
@@ -38,12 +41,42 @@ struct Vertex
 	void InvertCoords();
 };
 
+struct Color1555;
+#define RGB_MAX 255.0
+#define NO_TRANS 255
+#define SEMI_TRANS 127
+#define MAX_TRANS 0
 struct Color
 {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-	uint8_t pad;
+	uint8_t a;
+
+	Color1555 Convert();
+};
+
+struct Color1555
+{
+	uint16_t r : 5;
+	uint16_t g : 5;
+	uint16_t b : 5;
+	uint16_t a : 1;
+
+	Color Convert();
+};
+
+struct UV
+{
+	uint8_t u;
+	uint8_t v;
+};
+
+struct Texinfo
+{
+	uint16_t index    : 9;
+	uint16_t triCount : 6;
+	uint16_t unkFlag  : 1;
 };
 
 struct TriVertex
@@ -54,6 +87,8 @@ struct TriVertex
 	double r;
 	double g;
 	double b;
+	double u;
+	double v;
 };
 
 #define TRI_VERTEX_COUNT 3
@@ -61,11 +96,13 @@ struct TriVertex
 struct Triangle
 {
 	TriVertex v[TRI_VERTEX_COUNT];
-	unsigned vertexOffset;
+	unsigned vertexCount;
+	unsigned uvCount;
+	unsigned texIndex;
 	bool isTextured;
 	uint16_t semiTransparencyMode;
 
-	Triangle(Vertex * v, unsigned vertexOffset, Color * vcolor, bool isTextured, bool flipTri);
+	Triangle(Vertex * v, unsigned vertexCount, unsigned uvCount, Color * vcolor, UV * uv, const unsigned texWidth, const unsigned texHeight, unsigned texIndex, bool isTextured, bool flipTri);
 	void SetSemiTransparencyMode(uint8_t g);
 };
 
@@ -79,7 +116,7 @@ struct MDLHeader
 {
 	uint8_t unk0x0[0x20]; // 0x0
 	uint32_t vcolorDataOffset; // 0x20
-	uint32_t unk0x24; // 0x24
+	uint32_t uvDataOffset; // 0x24
 	uint32_t unk0x28; // 0x28
 	uint8_t unk0x2C[0x14]; // 0x2C
 	uint32_t numAnimations; // 0x40
@@ -93,7 +130,8 @@ struct MeshHeader
 	uint8_t unk_0x0[0x10]; // 0x0
 	uint32_t vertexListOffset; // 0x10
 	uint32_t vertexCompressionOffset; // 0x14
-	uint8_t unk0x18[0x8]; // 0x18
+	uint32_t uvIndexOffset; // 0x18
+	uint32_t texinfoOffset; // 0x1C
 	uint32_t vcolorFlagsOffset; // 0x20
 	uint8_t unk0x24[0x10]; // 0x24
 }; static_assert(sizeof(MeshHeader) == 0x34);
@@ -131,6 +169,26 @@ struct AnimInterpolation
 
 	AnimInterpolation(unsigned from, unsigned to, uint32_t interpolationRate);
 };
+
+struct TexHeader
+{
+	uint32_t magic; // 0x0
+	uint32_t size; // 0x4
+	uint16_t numImages; // 0x8
+	uint16_t numCluts; // 0xA
+	uint32_t unkOffset0xC; // 0xC
+	uint32_t unkOffset0x10; // 0x10
+	uint32_t unkOffset0x14; // 0x14
+	uint32_t unkOffset0x18; // 0x18
+	uint32_t unk0x1C; // 0x1C
+}; static_assert(sizeof(TexHeader) == 0x20);
+
+struct ImageHeader
+{
+	uint16_t width; // 0x0
+	uint16_t height; // 0x2
+	uint8_t unk0x4[16]; // 0x4
+}; static_assert(sizeof(ImageHeader) == 0x14);
 
 std::ostream &operator<<(std::ostream &out, const Triangle &t);
 std::ostream &operator<<(std::ostream &out, const AnimInterpolation &animItpl);

@@ -1,9 +1,11 @@
 #include "mesh.h"
 
-Mesh::Mesh(const std::string &outputPath, const std::string &meshType, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos, std::streamoff animIndexPos, std::streamoff animDataPos)
-	: FileComponent(outputPath + meshType + "_" + std::to_string(index) + ".obj", index, fileBeg)
+Mesh::Mesh(const std::string &outputPath, const std::string &meshType, const std::string &name, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos, std::streamoff uvDataPos, std::streamoff animIndexPos, std::streamoff animDataPos)
+	: FileComponent(outputPath + meshType + "_" + std::to_string(index), index, fileBeg)
 {
+	m_name = name;
 	m_vcolorDataPos = vcolorDataPos;
+	m_uvDataPos = uvDataPos;
 	m_animIndexPos = animIndexPos;
 	m_animDataPos = animDataPos;
 	m_isAnimated = (m_animIndexPos != 0) && (m_animDataPos != 0);
@@ -68,6 +70,33 @@ std::streamoff Mesh::LoadVcolorFlags(std::ifstream &file)
 	return file.tellg();
 }
 
+std::streamoff Mesh::LoadUvIndexes(std::ifstream &file)
+{
+	FileSeekRelative(file, offsetof(MeshHeader, uvIndexOffset) + m_header.uvIndexOffset);
+	uint16_t uvIndex;
+	for (unsigned i = 0; i < m_numTriangles; i++)
+	{
+		file.read((char *) &uvIndex, sizeof(uvIndex));
+		m_uvIndexList.push_back(uvIndex);
+	}
+	return file.tellg();
+}
+
+std::streamoff Mesh::LoadTexinfos(std::ifstream &file)
+{
+	FileSeekRelative(file, offsetof(MeshHeader, texinfoOffset) + m_header.texinfoOffset);
+	Texinfo texinfo;
+	unsigned trianglesRead = 0;
+	while (trianglesRead < m_numTriangles)
+	{
+		file.read((char *) &texinfo, sizeof(texinfo));
+		texinfo.triCount++;
+		m_texinfoList.push_back(texinfo);
+		trianglesRead += texinfo.triCount;
+	}
+	return file.tellg();
+}
+
 std::streamoff Mesh::LoadVertexes(std::ifstream &file)
 {
 	FileSeekRelative(file, offsetof(MeshHeader, vertexListOffset) + m_header.vertexListOffset);
@@ -98,18 +127,41 @@ void Mesh::LoadAnimVertexes(std::ifstream &file)
 	}
 }
 
-void Mesh::VertexesToTriangles(std::ifstream &file)
+uint16_t Mesh::LoadVcolor(std::ifstream &file, Color * color, unsigned triCount)
+{
+	uint16_t vcolorFlag = m_vcolorFlagList[triCount];
+	std::streamoff vcolorOffset = (vcolorFlag & VcolorFlag::IDBits) * sizeof(Color);
+	FileSeekAbsolute(file, m_vcolorDataPos + vcolorOffset);
+	file.read((char *) color, sizeof(Color) * TRI_VERTEX_COUNT);
+	return vcolorFlag;
+}
+
+void Mesh::LoadUV(std::ifstream &file, UV * uv, unsigned triCount)
+{
+	uint16_t uvIndex = m_uvIndexList[triCount];
+	std::streamoff uvOffset = uvIndex * sizeof(UV);
+	FileSeekAbsolute(file, m_uvDataPos + uvOffset);
+	file.read((char *) uv, sizeof(UV) * TRI_VERTEX_COUNT);
+}
+
+void Mesh::ConvertVertexesToTriangles(std::ifstream &file, Tex &tex)
 {
 	Vertex v[TRI_VERTEX_COUNT];
 	Color color[TRI_VERTEX_COUNT];
+	UV uv[TRI_VERTEX_COUNT];
 	bool flipTri;
 	bool isTextured;
 	unsigned fileVertexCount = 0;
+	unsigned fileUVCount = 0;
 	unsigned triCount = 0;
+	unsigned trisLinkedTex = 0;
+	unsigned texinfoIndex = 0;
+	unsigned texIndex = 0;
+	unsigned texUnkFlag = 0;
 	unsigned k = 0;
 	for (VertexCompression ve : m_vertexCompressionList)
 	{
-		flipTri = (ve.flag & 0x8) == 0;
+		flipTri = (ve.flag & VertexEncodeFlag::FlipTriangle) == 0;
 		isTextured = (ve.flag & VertexEncodeFlag::Untextured) == 0;
 		v[0] = m_vertexList[k++];
 		v[1] = m_vertexList[k++];
@@ -117,20 +169,34 @@ void Mesh::VertexesToTriangles(std::ifstream &file)
 		{
 			v[2] = m_vertexList[k++];
 
-			uint16_t vcolorFlag = m_vcolorFlagList[triCount++];
-			std::streamoff vcolorIndex = (vcolorFlag & VcolorFlag::IDBits) * sizeof(Color);
-			FileSeekAbsolute(file, m_vcolorDataPos + vcolorIndex);
-			file.read((char *) &color, sizeof(color));
-			Triangle tri = Triangle(v, fileVertexCount + 1, color, isTextured, flipTri);
-			if (vcolorFlag & VcolorFlag::SemiTransparent)
+			uint16_t vcolorFlag = LoadVcolor(file, color, triCount);
+			if (isTextured)
 			{
-				tri.SetSemiTransparencyMode(color[0].g);
+				LoadUV(file, uv, triCount);
+			}
+			if (trisLinkedTex == 0)
+			{
+				Texinfo texinfo = m_texinfoList[texinfoIndex++];
+				trisLinkedTex = texinfo.triCount;
+				texIndex = texinfo.index;
+				texUnkFlag = texinfo.unkFlag;
+			}
+			Triangle tri = Triangle(v, fileVertexCount + 1, fileUVCount + 1, color, uv, tex.getImage(texIndex).getWidth(), tex.getImage(texIndex).getHeight(), texIndex, isTextured, flipTri);
+			if (isTextured)
+			{
+				fileUVCount += TRI_VERTEX_COUNT;
+				if (vcolorFlag & VcolorFlag::SemiTransparent)
+				{
+					tri.SetSemiTransparencyMode(color[0].g);
+				}
 			}
 			m_triList.push_back(tri);
 
+			triCount++;
+			trisLinkedTex--;
 			v[0] = v[1];
 			v[1] = v[2];
-			fileVertexCount += 3;
+			fileVertexCount += TRI_VERTEX_COUNT;
 			flipTri = !flipTri;
 		}
 	}
@@ -141,6 +207,8 @@ std::streamoff Mesh::Load(std::ifstream &file)
 	std::streamoff headerEnd = LoadHeader(file);
 	LoadVertexCompression(file);
 	LoadVcolorFlags(file);
+	LoadUvIndexes(file);
+	LoadTexinfos(file);
 	if (m_isAnimated)
 	{
 		LoadAnimVertexIndex(file);
@@ -150,15 +218,16 @@ std::streamoff Mesh::Load(std::ifstream &file)
 	{
 		LoadVertexes(file);
 	}
-	VertexesToTriangles(file);
 	return headerEnd;
 }
 
-void Mesh::ToObj()
+void Mesh::Export()
 {
-	std::ofstream obj(m_outputPath, std::ios::out);
+	std::ofstream obj(m_outputPath + ".obj", std::ios::out);
+	obj << "mtllib " << m_name << ".mtl" << std::endl;
 	for (Triangle &tri : m_triList)
 	{
 		obj << tri;
 	}
+	obj.close();
 }

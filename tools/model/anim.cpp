@@ -1,9 +1,11 @@
 #include "anim.h"
 
-Anim::Anim(const std::string &outputPath, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos) :
+Anim::Anim(const std::string &outputPath, const std::string &name, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos, std::streamoff uvDataPos) :
 	FileComponent(outputPath + "anim_" + std::to_string(index) + "_", index, fileBeg)
 {
+	m_name = name;
 	m_vcolorDataPos = vcolorDataPos;
+	m_uvDataPos = uvDataPos;
 	m_numKeyframes = 0;
 	m_header = {};
 };
@@ -15,7 +17,7 @@ std::streamoff Anim::LoadHeader(std::ifstream &file)
 	return file.tellg();
 }
 
-void Anim::LoadKeyframes(std::ifstream &file)
+void Anim::LoadKeyframes(std::ifstream &file, Tex &tex)
 {
 	uint32_t animDataOffset;
 	FileSeekAbsolute(file, m_header.dataStartPos);
@@ -36,15 +38,17 @@ void Anim::LoadKeyframes(std::ifstream &file)
 		if (!m_keyframeMeshIndex.contains(animIndexStartPos))
 		{
 			m_keyframeMeshIndex[animIndexStartPos] = ++m_numKeyframes;
-			Mesh mesh = Mesh(m_outputPath, "keyframe", m_numKeyframes, meshBeg, m_vcolorDataPos, animIndexStartPos, animDataPos);
+			Mesh mesh = Mesh(m_outputPath, "keyframe", m_name, m_numKeyframes, meshBeg, m_vcolorDataPos, m_uvDataPos, animIndexStartPos, animDataPos);
 			mesh.Load(file);
+			mesh.ConvertVertexesToTriangles(file, tex);
 			m_meshList.push_back(mesh);
 		}
 		if ((keyframeHeader.interpolationRate != 0) && (!m_keyframeMeshIndex.contains(animIndexEndPos)))
 		{
 			m_keyframeMeshIndex[animIndexEndPos] = ++m_numKeyframes;
-			Mesh mesh = Mesh(m_outputPath, "keyframe", m_numKeyframes, meshBeg, m_vcolorDataPos, animIndexEndPos, animDataPos);
+			Mesh mesh = Mesh(m_outputPath, "keyframe", m_name, m_numKeyframes, meshBeg, m_vcolorDataPos, m_uvDataPos, animIndexEndPos, animDataPos);
 			mesh.Load(file);
+			mesh.ConvertVertexesToTriangles(file, tex);
 			m_meshList.push_back(mesh);
 		}
 		m_animItptList.emplace_back(AnimInterpolation(m_keyframeMeshIndex[animIndexStartPos], m_keyframeMeshIndex[animIndexEndPos], keyframeHeader.interpolationRate));
@@ -56,11 +60,10 @@ void Anim::LoadKeyframes(std::ifstream &file)
 std::streamoff Anim::Load(std::ifstream &file)
 {
 	std::streamoff headerEnd = LoadHeader(file);
-	LoadKeyframes(file);
 	return headerEnd;
 }
 
-void Anim::ToObj()
+void Anim::Export()
 {
 	std::ofstream keyframes(m_outputPath + "keyframes.txt", std::ios::out);
 	keyframes << "Interpolation formula: v = [keyframeStart.v * (1 - rate)] + [keyframeEnd.v * rate]" << std::endl;
@@ -72,6 +75,6 @@ void Anim::ToObj()
 	keyframes.close();
 	for (Mesh &mesh : m_meshList)
 	{
-		mesh.ToObj();
+		mesh.Export();
 	}
 }

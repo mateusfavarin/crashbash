@@ -131,17 +131,23 @@
   <ItemGroup>
     <ClCompile Include="anim.cpp" />
     <ClCompile Include="filecomponent.cpp" />
+    <ClCompile Include="filemanager.cpp" />
+    <ClCompile Include="image.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mdl.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mesh.h" />
     <ClCompile Include="primitives.cpp" />
+    <ClCompile Include="tex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anim.h" />
     <ClInclude Include="filecomponent.h" />
+    <ClInclude Include="filemanager.h" />
+    <ClInclude Include="image.h" />
     <ClInclude Include="primitives.h" />
     <ClInclude Include="mdl.h" />
+    <ClInclude Include="tex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
