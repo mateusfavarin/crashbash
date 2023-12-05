@@ -181,7 +181,7 @@ void Mesh::ConvertVertexesToTriangles(std::ifstream &file, Tex &tex)
 				texIndex = texinfo.index;
 				texUnkFlag = texinfo.unkFlag;
 			}
-			Triangle tri = Triangle(v, fileVertexCount + 1, fileUVCount + 1, color, uv, tex.getImage(texIndex).getWidth(), tex.getImage(texIndex).getHeight(), texIndex, isTextured, flipTri);
+			Triangle tri = Triangle(v, fileVertexCount + 1, fileUVCount + 1, color, uv, tex.GetImage(texIndex).GetWidth(), tex.GetImage(texIndex).GetHeight(), texIndex, isTextured, flipTri);
 			if (isTextured)
 			{
 				fileUVCount += TRI_VERTEX_COUNT;

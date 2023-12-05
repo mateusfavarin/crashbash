@@ -6,6 +6,7 @@
 class FileComponent
 {
 public:
+	const std::string& GetOutputPath() const;
 	virtual std::streamoff Load(std::ifstream &file) = 0;
 	virtual void Export() = 0;
 

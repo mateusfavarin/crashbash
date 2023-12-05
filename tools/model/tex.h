@@ -9,8 +9,8 @@ class Tex : public FileManager
 public:
 	Tex(fs::path texPath);
 	void Export() override;
-	const Image& getImage(unsigned index) const;
-	const unsigned getImageListSize() const;
+	const Image& GetImage(unsigned index) const;
+	const unsigned GetImageListSize() const;
 
 private:
 	TexHeader m_header;

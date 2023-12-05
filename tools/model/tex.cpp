@@ -38,21 +38,21 @@ void Tex::Export()
 	}
 }
 
-const Image& Tex::getImage(unsigned index) const
+const Image& Tex::GetImage(unsigned index) const
 {
 	return m_imageList[index];
 }
 
-const unsigned Tex::getImageListSize() const
+const unsigned Tex::GetImageListSize() const
 {
 	return m_imageList.size();
 }
 
 std::ostream &operator<<(std::ostream &out, const Tex &tex)
 {
-	for (unsigned i = 0; i < tex.getImageListSize(); i++)
+	for (unsigned i = 0; i < tex.GetImageListSize(); i++)
 	{
-		out << "newmtl tex_" << i << std::endl << "map_Kd ../" << tex.GetOutputPath() << "tex_" << i << ".png" << std::endl;
+		out << "newmtl tex_" << i << std::endl << "map_Kd ../" << tex.GetImage(i).GetOutputPath() << std::endl;
 	}
 	return out;
 }

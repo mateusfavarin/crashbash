@@ -1,5 +1,10 @@
 #include "filecomponent.h"
 
+const std::string& FileComponent::GetOutputPath() const
+{
+	return m_outputPath;
+}
+
 FileComponent::FileComponent(const std::string &outputPath, unsigned index, std::streamoff fileBeg)
 {
 	m_fileBeg = fileBeg;

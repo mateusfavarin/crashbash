@@ -5,7 +5,7 @@
 #include "third_party/stb_image_write.h"
 
 Image::Image(const std::string &outputPath, unsigned index, std::streamoff fileBeg) :
-	FileComponent(outputPath + "tex_" + std::to_string(index), index, fileBeg)
+	FileComponent(outputPath + "tex_" + std::to_string(index) + ".png", index, fileBeg)
 {
 	m_width = 0;
 	m_height = 0;
@@ -48,17 +48,17 @@ std::streamoff Image::Load(std::ifstream &file)
 	return file.tellg();
 }
 
-const unsigned Image::getWidth() const
+const unsigned Image::GetWidth() const
 {
 	return m_width;
 }
 
-const unsigned Image::getHeight() const
+const unsigned Image::GetHeight() const
 {
 	return m_height;
 }
 
 void Image::Export()
 {
-	stbi_write_png(std::string(m_outputPath + ".png").c_str(), m_width, m_height, NUM_CHANNELS, &m_image[0], m_width * NUM_CHANNELS);
+	stbi_write_png(m_outputPath.c_str(), m_width, m_height, NUM_CHANNELS, &m_image[0], m_width * NUM_CHANNELS);
 }

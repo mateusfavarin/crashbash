@@ -3,15 +3,15 @@
 #include "primitives.h"
 #include "filecomponent.h"
 
-class Image : FileComponent
+class Image : public FileComponent
 {
 public:
 	Image(const std::string &outputPath, unsigned index, std::streamoff fileBeg);
 	std::streamoff LoadClut(std::ifstream &file);
 	std::streamoff Load(std::ifstream &file) override;
 	void Export() override;
-	const unsigned getWidth() const;
-	const unsigned getHeight() const;
+	const unsigned GetWidth() const;
+	const unsigned GetHeight() const;
 
 private:
 	ImageHeader m_header;
