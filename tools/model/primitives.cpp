@@ -70,18 +70,20 @@ Color Color1555::Convert()
 	return color;
 }
 
-Triangle::Triangle(Vertex * v, unsigned vertexCount, unsigned uvCount, Color * vcolor, UV * uv, const unsigned texWidth, const unsigned texHeight, unsigned texIndex, bool isTextured, bool flipTri)
+Triangle::Triangle(Vertex * v, unsigned vertexCount, unsigned uvCount, Color * vcolor, UV * uv, unsigned texWidth, unsigned texHeight, unsigned texIndex, bool isTextured, bool flipTri)
 {
+	texWidth--;
+	texHeight--;
 	for (unsigned i = 0; i < TRI_VERTEX_COUNT; i++)
 	{
-		this->v[i].x = ((double)v[i].x) / TRI_SCALE;
-		this->v[i].y = ((double)v[i].y) / TRI_SCALE;
-		this->v[i].z = ((double)v[i].z) / TRI_SCALE;
-		this->v[i].r = ((double)vcolor[i].r) / RGB_MAX;
-		this->v[i].g = ((double)vcolor[i].g) / RGB_MAX;
-		this->v[i].b = ((double)vcolor[i].b) / RGB_MAX;
+		this->v[i].x = ((double) v[i].x) / TRI_SCALE;
+		this->v[i].y = ((double) v[i].y) / TRI_SCALE;
+		this->v[i].z = ((double) v[i].z) / TRI_SCALE;
+		this->v[i].r = ((double) vcolor[i].r) / RGB_MAX;
+		this->v[i].g = ((double) vcolor[i].g) / RGB_MAX;
+		this->v[i].b = ((double) vcolor[i].b) / RGB_MAX;
 		this->v[i].u = ((double) uv[i].u) / ((double) texWidth);
-		this->v[i].v = ((double) uv[i].v) / ((double) texHeight);
+		this->v[i].v = ((double) (texHeight - uv[i].v)) / ((double) texHeight);
 	}
 	if (flipTri)
 	{
@@ -132,7 +134,7 @@ AnimInterpolation::AnimInterpolation(unsigned from, unsigned to, uint32_t interp
 {
 	this->from = from;
 	this->to = to;
-	this->rate = ((double)interpolationRate * 100) / 4096.0;
+	this->rate = ((double) interpolationRate * 100) / 4096.0;
 }
 
 std::ostream &operator<<(std::ostream &out, const AnimInterpolation &animItpl)
