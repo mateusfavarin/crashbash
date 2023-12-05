@@ -177,8 +177,8 @@ struct TexHeader
 	uint32_t size; // 0x4
 	uint16_t numImages; // 0x8
 	uint16_t numCluts; // 0xA
-	uint32_t unkOffset0xC; // 0xC
-	uint32_t unkOffset0x10; // 0x10
+	uint32_t imageOffset; // 0xC
+	uint32_t clutOffset; // 0x10
 	uint32_t unkOffset0x14; // 0x14
 	uint32_t unkOffset0x18; // 0x18
 	uint32_t unk0x1C; // 0x1C
@@ -188,7 +188,9 @@ struct ImageHeader
 {
 	uint16_t width; // 0x0
 	uint16_t height; // 0x2
-	uint8_t unk0x4[16]; // 0x4
+	uint8_t unk0x4[8]; // 0x4
+	uint16_t paletteIndex; // 0xC
+	uint8_t unk0xE[6]; // 0xE
 }; static_assert(sizeof(ImageHeader) == 0x14);
 
 std::ostream &operator<<(std::ostream &out, const Triangle &t);

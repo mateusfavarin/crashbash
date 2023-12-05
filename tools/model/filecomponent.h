@@ -18,4 +18,5 @@ protected:
 
 	void FileSeekRelative(std::ifstream &file, std::streamoff offset = 0);
 	void FileSeekAbsolute(std::ifstream &file, std::streamoff position);
+	void FileJump(std::ifstream &file, std::streamoff offset);
 };

@@ -17,15 +17,13 @@ std::streamoff Tex::ReadHeader()
 
 std::streamoff Tex::LoadImages()
 {
-	for (unsigned i = 0; i < m_header.numCluts; i++)
-	{
-		Image image = Image(m_outputPath, i, m_file.tellg());
-		image.LoadClut(m_file);
-		m_imageList.push_back(image);
-	}
+	std::streamoff clutPos = m_fileBeg + offsetof(TexHeader, clutOffset) + m_header.clutOffset;
+	FileSeekRelative(offsetof(TexHeader, imageOffset) + m_header.imageOffset);
 	for (unsigned i = 0; i < m_header.numImages; i++)
 	{
-		m_imageList[i].Load(m_file);
+		Image image = Image(m_outputPath, i, m_file.tellg(), clutPos, m_header.numCluts);
+		image.Load(m_file);
+		m_imageList.push_back(image);
 	}
 	return m_file.tellg();
 }

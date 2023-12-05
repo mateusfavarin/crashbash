@@ -21,3 +21,8 @@ void FileComponent::FileSeekAbsolute(std::ifstream &file, std::streamoff positio
 {
 	file.seekg(position, std::ios::beg);
 }
+
+void FileComponent::FileJump(std::ifstream & file, std::streamoff offset)
+{
+	file.seekg(offset, std::ios::cur);
+}
