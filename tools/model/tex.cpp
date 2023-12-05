@@ -34,7 +34,7 @@ void Tex::Export()
 {
 	for (Image &image : m_imageList)
 	{
-		//image.
+		image.Export();
 	}
 }
 
@@ -52,7 +52,7 @@ std::ostream &operator<<(std::ostream &out, const Tex &tex)
 {
 	for (unsigned i = 0; i < tex.getImageListSize(); i++)
 	{
-		out << "newmtl tex_" << i << std::endl << "map_Kd tex_" << i << ".bmp" << std::endl;
+		out << "newmtl tex_" << i << std::endl << "map_Kd ../" << tex.GetOutputPath() << "tex_" << i << ".png" << std::endl;
 	}
 	return out;
 }

@@ -8,7 +8,7 @@ MDL::MDL(fs::path mdlPath, fs::path texPath) :
 
 	ReadHeader();
 	LoadMeshes();
-	LoadAnims();
+	//LoadAnims();
 }
 
 std::streamoff MDL::ReadHeader()

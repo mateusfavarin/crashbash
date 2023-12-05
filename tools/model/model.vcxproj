@@ -148,6 +148,8 @@
     <ClInclude Include="primitives.h" />
     <ClInclude Include="mdl.h" />
     <ClInclude Include="tex.h" />
+    <ClInclude Include="third_party\stb_image.h" />
+    <ClInclude Include="third_party\stb_image_write.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -65,7 +65,7 @@ Color Color1555::Convert()
 		}
 	}
 	color.r = (((this->r * 527u) + 23u) >> 6u) & 0xFFu;
-	color.g = (((this->g * 527u) + 23u) >> 6u) & 0xFu;
+	color.g = (((this->g * 527u) + 23u) >> 6u) & 0xFFu;
 	color.b = fixPitchBlack ? 0 : (((this->b * 527u) + 23u) >> 6u) & 0xFFu;
 	return color;
 }

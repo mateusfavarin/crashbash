@@ -1,5 +1,10 @@
 #include "filemanager.h"
 
+const std::string& FileManager::GetOutputPath() const
+{
+	return m_outputPath;
+}
+
 FileManager::FileManager(fs::path path, std::string fileType)
 {
 	m_path = path;

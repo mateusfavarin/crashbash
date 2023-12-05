@@ -7,6 +7,7 @@ namespace fs = std::filesystem;
 class FileManager
 {
 public:
+	const std::string& GetOutputPath() const;
 	virtual void Export() = 0;
 
 protected:

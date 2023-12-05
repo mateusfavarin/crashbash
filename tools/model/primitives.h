@@ -46,6 +46,7 @@ struct Color1555;
 #define NO_TRANS 255
 #define SEMI_TRANS 127
 #define MAX_TRANS 0
+#define NUM_CHANNELS 4
 struct Color
 {
 	uint8_t r;

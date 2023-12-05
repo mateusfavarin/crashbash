@@ -20,4 +20,5 @@ private:
 	unsigned m_bpp;
 	uint32_t m_numColors;
 	std::vector<Color> m_clut;
+	std::vector<Color> m_image;
 };
