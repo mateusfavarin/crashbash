@@ -137,6 +137,7 @@
     <ClCompile Include="mdl.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mesh.h" />
+    <ClCompile Include="object.cpp" />
     <ClCompile Include="primitives.cpp" />
     <ClCompile Include="tex.cpp" />
   </ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="filecomponent.h" />
     <ClInclude Include="filemanager.h" />
     <ClInclude Include="image.h" />
+    <ClInclude Include="object.h" />
     <ClInclude Include="primitives.h" />
     <ClInclude Include="mdl.h" />
     <ClInclude Include="tex.h" />

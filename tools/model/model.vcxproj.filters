@@ -45,6 +45,9 @@
     <ClCompile Include="image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mdl.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="third_party\stb_image_write.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,6 +7,7 @@
 class Mesh : public FileComponent
 {
 public:
+	Mesh() : FileComponent() {};
 	Mesh(const std::string &outputPath, const std::string &meshType, const std::string &name, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos, std::streamoff uvDataPos, std::streamoff animIndexPos = 0, std::streamoff animDataPos = 0);
 	std::streamoff Load(std::ifstream &file) override;
 	void ConvertVertexesToTriangles(std::ifstream &file, Tex &tex);

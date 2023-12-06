@@ -115,7 +115,8 @@ struct VertexCompression
 
 struct MDLHeader
 {
-	uint8_t unk0x0[0x20]; // 0x0
+	uint8_t unk0x0[0x1C]; // 0x0
+	uint32_t objectHeaderOffset; // 0x1C
 	uint32_t vcolorDataOffset; // 0x20
 	uint32_t uvDataOffset; // 0x24
 	uint32_t unk0x28; // 0x28
@@ -192,6 +193,13 @@ struct ImageHeader
 	uint16_t paletteIndex; // 0xC
 	uint8_t unk0xE[6]; // 0xE
 }; static_assert(sizeof(ImageHeader) == 0x14);
+
+struct ObjectHeader
+{
+	uint32_t meshOffset; // 0x0
+	int32_t dataOffset; // 0x4
+	uint32_t unk; // 0x8
+}; static_assert(sizeof(ObjectHeader) == 0xC);
 
 std::ostream &operator<<(std::ostream &out, const Triangle &t);
 std::ostream &operator<<(std::ostream &out, const AnimInterpolation &animItpl);

@@ -1,8 +1,9 @@
 #include "tex.h"
 
-Tex::Tex(fs::path texPath) :
+Tex::Tex(fs::path texPath, const std::string &mtlPath) :
 	FileManager(texPath, "tex")
 {
+	m_mtlPath = mtlPath;
 	m_header = {};
 	ReadHeader();
 	LoadImages();
@@ -30,6 +31,10 @@ std::streamoff Tex::LoadImages()
 
 void Tex::Export()
 {
+	std::ofstream mtl(m_mtlPath, std::ios::out);
+	mtl << *this;
+	mtl.close();
+
 	for (Image &image : m_imageList)
 	{
 		image.Export();

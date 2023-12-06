@@ -1,14 +1,16 @@
 #include "mdl.h"
 
 MDL::MDL(fs::path mdlPath, fs::path texPath) :
-	FileManager(mdlPath, "mdl"), m_tex(texPath)
+	FileManager(mdlPath, "mdl"), m_tex(texPath, m_outputPath + m_name + ".mtl")
 {
 	m_vcolorDataPos = 0;
 	m_uvDataPos = 0;
+	m_numObjects = 0;
 
 	ReadHeader();
 	LoadMeshes();
 	LoadAnims();
+	LoadObjects();
 }
 
 std::streamoff MDL::ReadHeader()
@@ -48,11 +50,23 @@ std::streamoff MDL::LoadAnims()
 	return m_file.tellg();
 }
 
+std::streamoff MDL::LoadObjects()
+{
+	FileSeekRelative(offsetof(MDLHeader, objectHeaderOffset) + m_header.objectHeaderOffset);
+	m_file.read((char *) &m_numObjects, sizeof(m_numObjects));
+	for (unsigned i = 0; i < m_numObjects; i++)
+	{
+		Object object = Object(m_outputPath, m_name, i, m_file.tellg(), m_vcolorDataPos, m_uvDataPos);
+		std::streamoff nextHeader = object.Load(m_file);
+		object.ConvertVertexesToTriangles(m_file, m_tex);
+		m_objectList.push_back(object);
+		FileSeekAbsolute(nextHeader);
+	}
+	return m_file.tellg();
+}
+
 void MDL::Export()
 {
-	std::ofstream mtl(m_outputPath + m_name + ".mtl", std::ios::out);
-	mtl << m_tex;
-	mtl.close();
 	m_tex.Export();
 	for (Mesh &mesh : m_meshList)
 	{
@@ -61,5 +75,9 @@ void MDL::Export()
 	for (Anim &anim : m_animList)
 	{
 		anim.Export();
+	}
+	for (Object &object : m_objectList)
+	{
+		object.Export();
 	}
 }

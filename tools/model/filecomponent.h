@@ -11,6 +11,7 @@ public:
 	virtual void Export() = 0;
 
 protected:
+	FileComponent() {};
 	FileComponent(const std::string &outputPath, unsigned index, std::streamoff fileBeg);
 	std::string m_outputPath;
 	unsigned m_index;

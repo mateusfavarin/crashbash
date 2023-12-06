@@ -36,6 +36,7 @@ std::streamoff Image::LoadClut(std::ifstream &file, unsigned index)
 
 std::streamoff Image::Load(std::ifstream &file)
 {
+	FileSeekRelative(file);
 	file.read((char *) &m_header, sizeof(m_header));
 	unsigned clutIndex = m_header.paletteIndex >> 1;
 	clutIndex = (clutIndex > m_lastClut) ? m_lastClut : clutIndex;
