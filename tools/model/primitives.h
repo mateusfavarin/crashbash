@@ -115,15 +115,27 @@ struct VertexCompression
 
 struct MDLHeader
 {
-	uint8_t unk0x0[0x1C]; // 0x0
+	uint32_t magic; // 0x0
+	uint32_t zero0x4; // 0x4 - always zero
+	uint32_t unkOffset0x8; // 0x8
+	uint32_t unkNumber0xC; // 0xC
+	uint32_t copyOffset0x8_0x10; // 0x10 - always equals to: unkOffset0x8 - 0x8
+	uint32_t unkNumber0x14; // 0x14
+	uint32_t unkOffset0x18; // 0x18
 	uint32_t objectHeaderOffset; // 0x1C
 	uint32_t vcolorDataOffset; // 0x20
 	uint32_t uvDataOffset; // 0x24
-	uint32_t unk0x28; // 0x28
-	uint8_t unk0x2C[0x14]; // 0x2C
+	uint32_t unkOffset0x28; // 0x28
+	uint32_t unkOffset0x2C; // 0x2C
+	uint32_t zero0x30; // 0x30 - always zero
+	uint32_t zero0x34; // 0x34 - always zero
+	uint32_t unkNumber0x38; // 0x38
+	uint32_t unkOffset0x1C; // 0x1C
 	uint32_t numAnimations; // 0x40
 	uint32_t animHeaderOffset; // 0x44
-	uint8_t unk0x48[0xC]; // 0x48
+	uint32_t unkNumber0x48; // 0x48
+	uint32_t unkOffset0x4C; // 0x4C
+	uint32_t unkOffset0x50; // 0x50
 	uint32_t numMeshes; // 0x54
 }; static_assert(sizeof(MDLHeader) == 0x58);
 

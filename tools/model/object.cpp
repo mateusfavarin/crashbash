@@ -3,6 +3,7 @@
 Object::Object(const std::string &outputPath, const std::string &name, unsigned index, std::streamoff fileBeg, std::streamoff vcolorDataPos, std::streamoff uvDataPos) :
 	FileComponent(outputPath, index, fileBeg)
 {
+	m_isValidData = true;
 	m_name = name;
 	m_vcolorDataPos = vcolorDataPos;
 	m_uvDataPos = uvDataPos;
@@ -13,6 +14,11 @@ std::streamoff Object::Load(std::ifstream &file)
 {
 	FileSeekRelative(file);
 	file.read((char *) &m_header, sizeof(m_header));
+	if (m_header.dataOffset >= 0)
+	{
+		m_isValidData = false;
+		return std::streamoff();
+	}
 	std::streamoff headerEnd = file.tellg();
 
 	uint32_t dataPos; // might always point to zero
@@ -24,6 +30,11 @@ std::streamoff Object::Load(std::ifstream &file)
 	m_mesh.Load(file);
 
 	return headerEnd;
+}
+
+bool Object::IsValid()
+{
+	return m_isValidData;
 }
 
 void Object::ConvertVertexesToTriangles(std::ifstream &file, Tex &tex)

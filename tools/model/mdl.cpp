@@ -6,6 +6,7 @@ MDL::MDL(fs::path mdlPath, fs::path texPath) :
 	m_vcolorDataPos = 0;
 	m_uvDataPos = 0;
 	m_numObjects = 0;
+	m_realNumObjects = 0;
 
 	ReadHeader();
 	LoadMeshes();
@@ -52,16 +53,23 @@ std::streamoff MDL::LoadAnims()
 
 std::streamoff MDL::LoadObjects()
 {
+	if ((m_header.unkOffset0x8 + 0x8) == (m_header.objectHeaderOffset)) return std::streamoff();
+
 	FileSeekRelative(offsetof(MDLHeader, objectHeaderOffset) + m_header.objectHeaderOffset);
 	m_file.read((char *) &m_numObjects, sizeof(m_numObjects));
-	for (unsigned i = 0; i < m_numObjects; i++)
+	unsigned realNumObjects = 0;
+	while (true)
 	{
-		Object object = Object(m_outputPath, m_name, i, m_file.tellg(), m_vcolorDataPos, m_uvDataPos);
+		Object object = Object(m_outputPath, m_name, realNumObjects, m_file.tellg(), m_vcolorDataPos, m_uvDataPos);
 		std::streamoff nextHeader = object.Load(m_file);
+		if (!object.IsValid()) break;
+
+		realNumObjects++;
 		object.ConvertVertexesToTriangles(m_file, m_tex);
 		m_objectList.push_back(object);
 		FileSeekAbsolute(nextHeader);
 	}
+	m_realNumObjects = realNumObjects;
 	return m_file.tellg();
 }
 

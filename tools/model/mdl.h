@@ -16,6 +16,7 @@ private:
 	std::streamoff m_vcolorDataPos;
 	std::streamoff m_uvDataPos;
 	uint32_t m_numObjects;
+	unsigned m_realNumObjects;
 
 	Tex m_tex;
 	MDLHeader m_header;
