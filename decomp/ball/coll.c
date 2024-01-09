@@ -1,7 +1,7 @@
 #include <math.h>
 #include "coll.h"
 
-PillarDatabase pillarDatabase[NUM_PILLARS] = {
+PillarDatabase pillarDatabase[NUM_LEVELS] = {
     /* Crashball */
     [0] = {
         .pos = {

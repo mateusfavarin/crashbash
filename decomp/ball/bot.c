@@ -111,10 +111,7 @@ static s32 PickEnemy(s32 playerID)
         }
     }
 
-    if (totalPublicEnemyFactor == 0)
-    {
-        return NO_PLAYER;
-    }
+    if (totalPublicEnemyFactor == 0) return NO_PLAYER;
 
     s32 randEnemyFactor = Rand(totalPublicEnemyFactor);
     s32 combinedEnemyFactor = 0;
@@ -123,10 +120,7 @@ static s32 PickEnemy(s32 playerID)
         if ((i != playerID) && (i != teamID) && ((_playerMetadata[i].flags & 0xFA00) == 0)) // TODO: figure out enum flags
         {
             combinedEnemyFactor += _botDifficulty[i].publicEnemyFactor;
-            if (randEnemyFactor < combinedEnemyFactor)
-            {
-                return i;
-            }
+            if (randEnemyFactor < combinedEnemyFactor) return i;
         }
     }
 
@@ -153,6 +147,10 @@ static inline u32 TestBallCrossedLine(s32 prevPos, s32 nextPos, s32 p1, s32 p2)
         @ballAngle: angle that the function will assume the ball is going
         @pLines: pointer to array[NUM_PLAYERS] of Rects describing the coordinates each line for each player
     @return: bool
+
+    Author notes: this function is originally split as two separated functions in the original game. However,
+    the functions are virtually the same, with the exception of the lines used in the calculation. Therefore I've
+    decided to merge these two functions by adding the line as a 5th parameter.
 */
 static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredictedPos, s32 ballAngle, const RectPoints * pLines)
 {
@@ -359,47 +357,27 @@ static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredic
     s32 coordDenominator = (deltaXBall * deltaZLine) - (deltaZBall * deltaXLine);
     s32 lineComparison = (deltaXLine * distZLineBall) - (deltaZLine * distXLineBall);
 
-    if (coordDenominator == 0) // division by 0
-    {
-        return false;
-    }
+    if (coordDenominator == 0) return false; // division by 0
+
     if (coordDenominator > 0) // ball going towards UP or LEFT goals
     {
-        if (coordNominator < 0)
-        {
-            return false; // intersection < line.x1 or line.z1
-        }
-        if (coordDenominator < coordNominator)
-        {
-            return false; // intersection > line.x2 or line.z2
-        }
-        if (lineComparison < 0)
-        {
-            return false; // ball started inside the goal
-        }
-        if (coordDenominator < lineComparison)
-        {
-            return false; // Ball wasn't predicted to go past the goal
-        }
+        if (coordNominator < 0) return false; // intersection < line.x1 or line.z1
+
+        if (coordDenominator < coordNominator) return false; // intersection > line.x2 or line.z2
+
+        if (lineComparison < 0) return false; // ball started inside the goal
+
+        if (coordDenominator < lineComparison) return false; // Ball wasn't predicted to go past the goal
     }
     else
     {
-        if (coordNominator > 0)
-        {
-            return false; // intersection < line.x1 or line.z1
-        }
-        if (coordDenominator > coordNominator)
-        {
-            return false; // intersection > line.x2 or line.z2
-        }
-        if (lineComparison > 0)
-        {
-            return false; // ball started inside the goal
-        }
-        if (coordDenominator > lineComparison)
-        {
-            return false; // Ball wasn't predicted to go past the goal
-        }
+        if (coordNominator > 0) return false; // intersection < line.x1 or line.z1
+
+        if (coordDenominator > coordNominator) return false; // intersection > line.x2 or line.z2
+
+        if (lineComparison > 0) return false; // ball started inside the goal
+
+        if (coordDenominator > lineComparison) return false; // Ball wasn't predicted to go past the goal
     }
     s32 temp = FP_DIV(coordNominator, coordDenominator);
     pPredictedPos->x = line.x1 + FP_MULT(line.x2 - line.x1, temp);
@@ -428,10 +406,8 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
     {
         // TODO
     }
-    if (pm.attackCooldown)
-    {
-        return false;
-    }
+    if (pm.attackCooldown) return false;
+
     EntityLinkedList * pBallList = _pBallLinkedList;
     EntityLinkedList * pSelectedBall = nullptr;
     while (pBallList)
@@ -458,20 +434,15 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
                     if (_GetStructure(pBallList, 0x800))
                     {
                         pSelectedBall = pBallList;
-                        if (PredictBallCrossingLine(enemyID, &pBallObject->pos, &predictedPos, distAngle, attackLine))
-                        {
-                            return true;
-                        }
+                        if (PredictBallCrossingLine(enemyID, &pBallObject->pos, &predictedPos, distAngle, attackLine)) return true;
                     }
                 }
             }
         }
         pBallList = pBallList->next;
     }
-    if (pSelectedBall == nullptr)
-    {
-        return false;
-    }
+    if (pSelectedBall == nullptr) return false;
+
     if (isAggro)
     {
         if (_playersCampaign != SOLO)
@@ -481,10 +452,7 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
             s32 zDist = pPlayer->pos.z - pBallObject->pos.z;
             s32 distAngle = _ArcTan(xDist, zDist);
             if ((_GetStructure(pBallList, 0x800) == nullptr) ||
-                (PredictBallCrossingLine(pm.teamID, &pBallObject->pos, &predictedPos, distAngle, attackLine)))
-            {
-                return false;
-            }
+                (PredictBallCrossingLine(pm.teamID, &pBallObject->pos, &predictedPos, distAngle, attackLine))) return false;
         }
         return true;
     }
@@ -517,10 +485,7 @@ static inline void BotShootBall(Bot * pBot)
 */
 void Bot_onUpdate(s32 playerID)
 {
-    if (_gameFlags & 0x4000000)
-    {
-        return;
-    }
+    if (_gameFlags & 0x4000000) return;
 
     PlayerMetadata pm = _playerMetadata[playerID];
     Object * pPlayer = pm.pPlayer;
@@ -604,21 +569,35 @@ void Bot_onUpdate(s32 playerID)
 
         s32 i = 3;
         if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pRightPlayerID)
+        {
             i = 0;
+        }
         else if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pMiddlePlayerID)
+        {
             i = 1;
+        }
         else if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pLeftPlayerID)
+        {
             i = 2;
+        }
 
         s32 posAdjustFactor = targetPosAdjustFactor[i];
         if (playerID == _Ball_PLAYER_1_ID)
+        {
             xTarget += posAdjustFactor;
+        }
         else if (playerID == _Ball_PLAYER_2_ID)
+        {
             xTarget -= posAdjustFactor;
+        }
         else if (playerID == _Ball_PLAYER_3_ID)
+        {
             xTarget -= posAdjustFactor; // Probably a typo, should be zTarget += posAdjustFactor
+        }
         else if (playerID == _Ball_PLAYER_4_ID)
+        {
             zTarget -= posAdjustFactor;
+        }
     }
 
     if (_levelID == LEVELID_N_BALLISM)

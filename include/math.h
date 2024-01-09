@@ -57,8 +57,10 @@
 
 /* Trigonometry */
 
+#define ANG_0   0x000
 #define ANG_90  0x400
 #define ANG_180 0x800
+#define ANG_270 0xC00
 #define ANG_360 0x1000
 #define ANG_MOD(x) ((x) & (ANG_360 - 1))
 #define ANG(x) ((s32)((((float)(x)) * 0x1000) / 360))
@@ -152,28 +154,22 @@ typedef struct PRNG
 
 force_inline s32 Abs(s32 x)
 {
-    if (x > 0)
-    {
-        return x;
-    }
+    if (x > 0) return x;
+
     return -x;
 }
 
 force_inline s32 Max(s32 x, s32 y)
 {
-    if (x > y)
-    {
-        return x;
-    }
+    if (x > y) return x;
+
     return y;
 }
 
 force_inline s32 Min(s32 x, s32 y)
 {
-    if (x > y)
-    {
-        return y;
-    }
+    if (x > y) return y;
+
     return x;
 }
 

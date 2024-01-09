@@ -30,10 +30,8 @@ u32 Rand(u32 range)
 s32 SubtractAngles(s32 x, s32 y)
 {
     s32 res = ANG_MOD(y - x);
-    if (res > ANG_180)
-    {
-        return res - ANG_360;
-    }
+    if (res > ANG_180) return res - ANG_360;
+
     return res;
 }
 
@@ -48,9 +46,7 @@ s32 SubtractAngles(s32 x, s32 y)
 s32 AbsSubtractAngles(s32 x, s32 y)
 {
     s32 res = ANG_MOD(y - x);
-    if (res > ANG_180)
-    {
-        return ANG_360 - res;
-    }
+    if (res > ANG_180) return ANG_360 - res;
+
     return res;
 }

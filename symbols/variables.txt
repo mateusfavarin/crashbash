@@ -22,9 +22,12 @@ _unk_8009e0d8 = 0x8009e0d8;
 _unk_8009e0e2 = 0x8009e0e2;
 
 _Ball_pillarData = 0x800c1a7c;
+_Ball_pillarObj = 0x800c1e28;
+_Ball_Func_Ball_onCollide_World = 0x800c1c8c;
 _Ball_playerSpeedCopy = 0x800c1ef0;
 _Ball_defaultChallengeQuality = 0x800c1f00;
 _Ball_unk_800c1f0c = 0x800c1f0c;
+_Ball_activeWalls = 0x800c1f14;
 _Ball_PLAYER_3_ID = 0x800c271c;
 _Ball_PLAYER_4_ID = 0x800c2720;
 _Ball_PLAYER_2_ID = 0x800c2724;

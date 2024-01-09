@@ -5,11 +5,11 @@
 #include <player.h>
 #include "coll.h"
 
-/* Functions */
-void _Ball_Bot_onUpdate(s32 playerID);
-
 /* Variables */
+extern s32 (* _Ball_Func_Ball_onCollide_World(Object * pBall, s32 ballAngle));
+extern PillarObj _Ball_pillarObj[4];
 extern PillarData _Ball_pillarData;
+extern u16 _Ball_activeWalls;
 extern s16 _Ball_playerSpeedCopy[NUM_PLAYERS];
 extern s16 _Ball_defaultChallengeQuality;
 extern u16 _Ball_unk_800c1f0c;
