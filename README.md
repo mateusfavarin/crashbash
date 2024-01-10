@@ -17,6 +17,10 @@ This project will adopt the [Ship of Theseus](https://en.wikipedia.org/wiki/Ship
 * `tools`: code for independent programs used to explore the Bash files.
 
 ## 📈 Progress
-Progress is measured with the amount of functions decompiled divided by the amount of known functions in each executable.
+Progress is measured with the amount of functions decompiled/identified divided by the amount of known functions in each executable.
 
+### Functions Identified
+![](https://progress-bar.dev/38/?scale=102&title=Ballistics&suffix=/102)
+
+### Functions Decompiled
 ![](https://progress-bar.dev/9/?scale=102&title=Ballistics&suffix=/102)
