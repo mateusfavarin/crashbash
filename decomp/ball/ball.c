@@ -14,11 +14,6 @@
         @ballAngle
         @pCircle
         @totalRadius: ball radius + circle radius
-
-    Author notes: original function has four parameters - it divides pCircle into a Vec3 pos
-    and an u32 radius. However this is unnecessary since all the information needed is originally in
-    the Circle structure, so I decided to change the function signature in order better use the
-    data structures and CPU resources.
 */
 static void Ball_onCollide_Circle(Vec3 * pBallPos, s32 ballAngle, const Circle * pCircle, s32 totalRadius)
 {
