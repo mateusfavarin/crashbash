@@ -21,7 +21,7 @@
 
 #define FRACTIONAL_BITS 8
 #define FP_ONE (1 << FRACTIONAL_BITS)
-#define FP(x) ((s32)(((float)(x)) * FP_ONE))
+#define FP(x) ((s32)((((float)x) * FP_ONE)))
 #define FP_TO_INT(x) ((x) >> FRACTIONAL_BITS)
 #define FP_MULT(x, y) (((x) * (y)) >> FRACTIONAL_BITS)
 #define FP_DIV(x, y) (((x) << FRACTIONAL_BITS) / (y))
@@ -47,12 +47,13 @@
 */
 
 #define FP_SQRT(x) (_CSQRT((x) << (PSYQ_FRACTIONAL_BITS - FRACTIONAL_BITS)) >> (PSYQ_FRACTIONAL_BITS - FRACTIONAL_BITS))
+#define DIST_SQ(x, y) ((x) * (x)) + ((y) * (y))
 #if FRACTIONAL_BITS == 8
     #define SQRT_SQ(x) (_CSQRT((x)) >> 6)
-    #define FP_DIST(x, y) (SQRT_SQ(((x) * (x)) + ((y) * (y))))
+    #define FP_DIST(x, y) (SQRT_SQ(DIST_SQ(x, y)))
 #else
     #define SQRT_SQ(x) (FP_SQRT((x) >> FRACTIONAL_BITS))
-    #define FP_DIST(x, y) (FP_SQRT((((x) * (x)) + ((y) * (y))) >> FRACTIONAL_BITS))
+    #define FP_DIST(x, y) (FP_SQRT(DIST_SQ(x, y) >> FRACTIONAL_BITS))
 #endif
 
 /* Trigonometry */
@@ -150,38 +151,14 @@ typedef struct PRNG
     u32 increment;
 } PRNG;
 
-/* Inline functions */
-
-force_inline s32 Abs(s32 x)
-{
-    if (x > 0) return x;
-
-    return -x;
-}
-
-force_inline s32 Max(s32 x, s32 y)
-{
-    if (x > y) return x;
-
-    return y;
-}
-
-force_inline s32 Min(s32 x, s32 y)
-{
-    if (x > y) return y;
-
-    return x;
-}
-
 extern PRNG _prng;
-force_inline void AdvanceSeed()
-{
-    _prng.seed += _prng.increment;
-    _prng.increment += (_prng.seed - (((s32)_prng.seed) >> 31));
-}
 
 /* Functions */
 
+s32 Abs(s32 x);
+s32 Max(s32 x, s32 y);
+s32 Min(s32 x, s32 y);
+void AdvanceSeed();
 u32 Rand(u32 range);
 s32 SubtractAngles(s32 x, s32 y);
 s32 AbsSubtractAngles(s32 x, s32 y);

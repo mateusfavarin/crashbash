@@ -50,9 +50,9 @@ static void Ball_onCollide_Circle(Vec3 * pBallPos, s32 ballAngle, const Circle *
     s32 distZ = pCircle->z - z2;
 
     // f(k) = ak^2 + bk + c
-    s32 a = ((deltaX * deltaX) + (deltaZ * deltaZ)) >> 4;
+    s32 a = DIST_SQ(deltaX, deltaZ) >> 4;
     s32 b = (2 * ((deltaX * distX) + (deltaZ * distZ))) >> 4;
-    s32 c = ((distX * distX) + (distZ * distZ) - (totalRadius * totalRadius)) >> 4;
+    s32 c = (DIST_SQ(distX, distZ) - (totalRadius * totalRadius)) >> 4;
     s32 delta = (b * b) - (4 * a * c);
     if (delta < 0) return;
     s32 deltaSquared = SQRT_SQ(delta);
@@ -89,7 +89,7 @@ s32 Ball_onCollide_World(Object * pBall, s32 ballAngle)
         radius = (pBall->field19_0x90 & 0x40) ? pPillarPos->radius + pBall->radius : pPillarPos->radius + FP(0.5);
         s32 deltaX = pBall->pos.x - pPillarPos->x;
         s32 deltaZ = pBall->pos.z - pPillarPos->z;
-        if (((deltaX * deltaX) + (deltaZ * deltaZ)) < (radius * radius))
+        if (DIST_SQ(deltaX, deltaZ) < (radius * radius))
         {
             pillarCollided = i;
             break;
@@ -98,7 +98,7 @@ s32 Ball_onCollide_World(Object * pBall, s32 ballAngle)
     if (pillarCollided == -1)
     {
         s32 collisionAngle = ANG_NO_COLL;
-        if (_Ball_activeWalls == 0) return collisionAngle;
+        if (_Ball_activeWalls == 0) { return collisionAngle; }
 
         // TODO: Figure out this flag
         s32 edgeCoords = (pBall->field19_0x90 & 0x40) ? FP(8) - pBall->radius : FP(8);

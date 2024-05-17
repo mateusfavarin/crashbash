@@ -34,16 +34,11 @@ static ColorVec AdjustColorLightLevel(ColorVec color)
 */
 PolyG4 * AddPolyG4(ColoredRect * quad, u32 polyFlags)
 {
-    if (!(polyFlags & 0x8000)) // TODO: figure out polyFlags
-    {
-        return nullptr;
-    }
+    // TODO: figure out polyFlags
+    if (!(polyFlags & 0x8000)) { return nullptr; }
     PolyG4 * pPrim;
     GetPrimMem(pPrim, PolyG4);
-    for (s32 i = 0; i < QUAD_SIZE; i++)
-    {
-        pPrim->v[i].color = AdjustColorLightLevel(quad->color[i]);
-    }
+    for (s32 i = 0; i < QUAD_SIZE; i++) { pPrim->v[i].color = AdjustColorLightLevel(quad->color[i]); }
     pPrim->texpage = (Texpage) {.code = 0xE1, .dither = 1};
     pPrim->gPolyCode = (PolyCode) {.quad = 1, .gouraud = 1, .renderCode = 1};
     if (polyFlags & 0x21) // TODO: figure out polyFlags
@@ -77,9 +72,6 @@ PolyG4 * AddPolyG4(ColoredRect * quad, u32 polyFlags)
         gte_stsxy(&pPrim->v[3].pos);
     }
     zIndex = (zIndex + _zIndexOffset) / 2;
-    if (zIndex < _maxZIndex)
-    {
-        AddPrim(pPrim, zIndex);
-    }
+    if (zIndex < _maxZIndex) { AddPrim(pPrim, zIndex); }
     return pPrim;
 }

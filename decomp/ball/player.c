@@ -29,7 +29,7 @@ u32 Player_onCollide(Object * pPlayer)
         s32 zDist = pPlayer->pos.z - pPillarPos->z;
         // TODO: Figure out this flag
         s32 radius = (pPlayer->field19_0x90 & 0x40) ? pPillarPos->radius + pPlayer->radius : pPillarPos->radius + FP(0.5);
-        if ((radius * radius) > ((xDist * xDist) + (zDist * zDist)))
+        if ((radius * radius) > DIST_SQ(xDist, zDist))
         {
             s32 ang = _ArcTan(-xDist, -zDist);
             if ((pPlayer == _playerMetadata[_Ball_PLAYER_1_ID].pPlayer) ||
@@ -62,7 +62,7 @@ void Player_onSpeed(s32 playerID)
         controller.buttonsHeld = BTN_NONE;
         controller.buttonsPressed = BTN_NONE;
     }
-    if ((!(controller.flags & CONTROLLER_CONNECTED)) && (pm.pBot->state == BOTSTATE_NONE)) return;
+    if ((!(controller.flags & CONTROLLER_CONNECTED)) && (pm.pBot->state == BOTSTATE_NONE)) { return; }
 
     Object * pPlayer = pm.pPlayer;
     PlayerPhysics * pPhys = pm.pPlayerPhysics;
@@ -93,35 +93,17 @@ void Player_onSpeed(s32 playerID)
         if (pPhys->field5_0x1d)
         {
             s32 accelRate = 0;
-            if (posInput)
-            {
-                accelRate += accel;
-            }
-            if (negInput)
-            {
-                accelRate -= accel;
-            }
-            if ((hasCollided) && (accelRate != 0))
-            {
-                accelRate += (accelRate > 0) ? speedCap / 2 : -speedCap / 2;
-            }
+            if (posInput) { accelRate += accel; }
+            if (negInput) { accelRate -= accel; }
+            if ((hasCollided) && (accelRate != 0)) { accelRate += (accelRate > 0) ? speedCap / 2 : -speedCap / 2; }
             pPhys->speed = Max(Min(pPhys->speed + accelRate, speedCap), -speedCap);
-            if ((pPhys->speed == 0) && (accelRate != 0))
-            {
-                pPhys->speed = (accelRate > 0) ? 1 : -1;
-            }
+            if ((pPhys->speed == 0) && (accelRate != 0)) { pPhys->speed = (accelRate > 0) ? 1 : -1; }
         }
     }
     else
     {
-        if(hasCollided)
-        {
-            pPhys->speed = 0;
-        }
-        else
-        {
-            pPhys->speed = (pPhys->speed > 0) ? Max(pPhys->speed - DEACCEL_RATE, 0) : Min(pPhys->speed + DEACCEL_RATE, 0);
-        }
+        if(hasCollided) { pPhys->speed = 0; }
+        else { pPhys->speed = (pPhys->speed > 0) ? Max(pPhys->speed - DEACCEL_RATE, 0) : Min(pPhys->speed + DEACCEL_RATE, 0); }
     }
     _Ball_playerSpeedCopy[playerID] = pPhys->speed;
     pPhys->angle = pPhys->angleCalc;

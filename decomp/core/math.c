@@ -2,6 +2,30 @@
 #include <math.h>
 #include <extern.h>
 
+inline s32 Abs(s32 x)
+{
+    if (x > 0) { return x; }
+    return -x;
+}
+
+inline s32 Max(s32 x, s32 y)
+{
+    if (x > y) { return x; }
+    return y;
+}
+
+inline s32 Min(s32 x, s32 y)
+{
+    if (x > y) { return y; }
+    return x;
+}
+
+void AdvanceSeed()
+{
+    _prng.seed += _prng.increment;
+    _prng.increment += (_prng.seed - (((s32)_prng.seed) >> 31));
+}
+
 /*
     @brief: Advances seed and returns a random number modulo range
     @address: 0x80015590
@@ -30,8 +54,7 @@ u32 Rand(u32 range)
 s32 SubtractAngles(s32 x, s32 y)
 {
     s32 res = ANG_MOD(y - x);
-    if (res > ANG_180) return res - ANG_360;
-
+    if (res > ANG_180) { return res - ANG_360; }
     return res;
 }
 
@@ -46,7 +69,6 @@ s32 SubtractAngles(s32 x, s32 y)
 s32 AbsSubtractAngles(s32 x, s32 y)
 {
     s32 res = ANG_MOD(y - x);
-    if (res > ANG_180) return ANG_360 - res;
-
+    if (res > ANG_180) { return ANG_360 - res; }
     return res;
 }

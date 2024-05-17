@@ -111,7 +111,7 @@ static s32 PickEnemy(s32 playerID)
         }
     }
 
-    if (totalPublicEnemyFactor == 0) return NO_PLAYER;
+    if (totalPublicEnemyFactor == 0) { return NO_PLAYER; }
 
     s32 randEnemyFactor = Rand(totalPublicEnemyFactor);
     s32 combinedEnemyFactor = 0;
@@ -120,7 +120,7 @@ static s32 PickEnemy(s32 playerID)
         if ((i != playerID) && (i != teamID) && ((_playerMetadata[i].flags & 0xFA00) == 0)) // TODO: figure out enum flags
         {
             combinedEnemyFactor += _botDifficulty[i].publicEnemyFactor;
-            if (randEnemyFactor < combinedEnemyFactor) return i;
+            if (randEnemyFactor < combinedEnemyFactor) { return i; }
         }
     }
 
@@ -154,23 +154,11 @@ static inline u32 TestBallCrossedLine(s32 prevPos, s32 nextPos, s32 p1, s32 p2)
 */
 static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredictedPos, s32 ballAngle, const RectPoints * pLines)
 {
-    s32 cornerIndex;
-    if (playerID == _Ball_PLAYER_1_ID)
-    {
-        cornerIndex = PLAYER_1;
-    }
-    if (playerID == _Ball_PLAYER_2_ID)
-    {
-        cornerIndex = PLAYER_2;
-    }
-    if (playerID ==  _Ball_PLAYER_3_ID)
-    {
-        cornerIndex = PLAYER_3;
-    }
-    if (playerID == _Ball_PLAYER_4_ID)
-    {
-        cornerIndex = PLAYER_4;
-    }
+    s32 cornerIndex = 0;
+    if (playerID == _Ball_PLAYER_1_ID) { cornerIndex = PLAYER_1; }
+    else if (playerID == _Ball_PLAYER_2_ID) { cornerIndex = PLAYER_2; }
+    else if (playerID == _Ball_PLAYER_3_ID) { cornerIndex = PLAYER_3; }
+    else if (playerID == _Ball_PLAYER_4_ID) { cornerIndex = PLAYER_4; }
 
     RectPoints line = pLines[cornerIndex];
     s32 angleDistortionFactor = Max(MAX_BOT_QUALITY - (_botDifficulty[playerID].quality + _Ball_defaultChallengeQuality), 0);
@@ -357,27 +345,27 @@ static u32 PredictBallCrossingLine(s32 playerID, Vec3 * pBallPos, Vec3 * pPredic
     s32 coordDenominator = (deltaXBall * deltaZLine) - (deltaZBall * deltaXLine);
     s32 lineComparison = (deltaXLine * distZLineBall) - (deltaZLine * distXLineBall);
 
-    if (coordDenominator == 0) return false; // division by 0
+    if (coordDenominator == 0) { return false; } // division by 0
 
     if (coordDenominator > 0) // ball going towards UP or LEFT goals
     {
-        if (coordNominator < 0) return false; // intersection < line.x1 or line.z1
+        if (coordNominator < 0) { return false; } // intersection < line.x1 or line.z1
 
-        if (coordDenominator < coordNominator) return false; // intersection > line.x2 or line.z2
+        if (coordDenominator < coordNominator) { return false; } // intersection > line.x2 or line.z2
 
-        if (lineComparison < 0) return false; // ball started inside the goal
+        if (lineComparison < 0) { return false; } // ball started inside the goal
 
-        if (coordDenominator < lineComparison) return false; // Ball wasn't predicted to go past the goal
+        if (coordDenominator < lineComparison) { return false; } // Ball wasn't predicted to go past the goal
     }
     else
     {
-        if (coordNominator > 0) return false; // intersection < line.x1 or line.z1
+        if (coordNominator > 0) { return false; } // intersection < line.x1 or line.z1
 
-        if (coordDenominator > coordNominator) return false; // intersection > line.x2 or line.z2
+        if (coordDenominator > coordNominator) { return false; } // intersection > line.x2 or line.z2
 
-        if (lineComparison > 0) return false; // ball started inside the goal
+        if (lineComparison > 0) { return false; } // ball started inside the goal
 
-        if (coordDenominator > lineComparison) return false; // Ball wasn't predicted to go past the goal
+        if (coordDenominator > lineComparison) { return false; } // Ball wasn't predicted to go past the goal
     }
     s32 temp = FP_DIV(coordNominator, coordDenominator);
     pPredictedPos->x = line.x1 + FP_MULT(line.x2 - line.x1, temp);
@@ -406,7 +394,7 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
     {
         // TODO
     }
-    if (pm.attackCooldown) return false;
+    if (pm.attackCooldown) { return false; }
 
     EntityLinkedList * pBallList = _pBallLinkedList;
     EntityLinkedList * pSelectedBall = nullptr;
@@ -418,30 +406,30 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
         {
             s32 xDist = pPlayer->pos.x - pBallObject->pos.x;
             s32 zDist = pPlayer->pos.z - pBallObject->pos.z;
-            if (((xDist * xDist) + (zDist * zDist)) < (maxDistance * maxDistance))
+            if (DIST_SQ(xDist, zDist) < (maxDistance * maxDistance))
             {
                 s32 distAngle = _ArcTan(xDist, zDist);
                 s32 shotAngle = SubtractAngles(distAngle, pm.pPlayerPhysics->angle);
                 if (enemyID == NO_PLAYER)
                 {
-                    if ((shotAngle > minAngle) && (shotAngle < maxAngle))
-                    {
-                        pSelectedBall = pBallList;
-                    }
+                    if ((shotAngle > minAngle) && (shotAngle < maxAngle)) { pSelectedBall = pBallList; }
                 }
                 else
                 {
                     if (_GetStructure(pBallList, 0x800))
                     {
                         pSelectedBall = pBallList;
-                        if (PredictBallCrossingLine(enemyID, &pBallObject->pos, &predictedPos, distAngle, attackLine)) return true;
+                        if (PredictBallCrossingLine(enemyID, &pBallObject->pos, &predictedPos, distAngle, attackLine))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
         }
         pBallList = pBallList->next;
     }
-    if (pSelectedBall == nullptr) return false;
+    if (pSelectedBall == nullptr) { return false; }
 
     if (isAggro)
     {
@@ -452,7 +440,10 @@ static u32 ShouldShootBall(s32 playerID, s32 enemyID, s32 maxDistance, s32 minAn
             s32 zDist = pPlayer->pos.z - pBallObject->pos.z;
             s32 distAngle = _ArcTan(xDist, zDist);
             if ((_GetStructure(pBallList, 0x800) == nullptr) ||
-                (PredictBallCrossingLine(pm.teamID, &pBallObject->pos, &predictedPos, distAngle, attackLine))) return false;
+                (PredictBallCrossingLine(pm.teamID, &pBallObject->pos, &predictedPos, distAngle, attackLine)))
+            {
+                return false;
+            }
         }
         return true;
     }
@@ -492,26 +483,11 @@ void Bot_onUpdate(s32 playerID)
     Bot * pBot = pm.pBot;
     pBot->nextInputs = BTN_NONE;
 
-    if (pBot->tauntCooldown)
-    {
-        pBot->tauntCooldown--;
-    }
-    if (pBot->aggroCooldown)
-    {
-        pBot->aggroCooldown--;
-    }
-    if (pBot->magnetTimer)
-    {
-        pBot->magnetTimer--;
-    }
-    if (pBot->field9_0x28)
-    {
-        pBot->field9_0x28--;
-    }
-    if (pBot->field12_0x30)
-    {
-        pBot->field12_0x30--;
-    }
+    if (pBot->tauntCooldown) { pBot->tauntCooldown--; }
+    if (pBot->aggroCooldown) { pBot->aggroCooldown--; }
+    if (pBot->magnetTimer) { pBot->magnetTimer--; }
+    if (pBot->field9_0x28) { pBot->field9_0x28--; }
+    if (pBot->field12_0x30) { pBot->field12_0x30--; }
 
     if ((pm.action == _unk_8009e0d8) || (pm.action ==  _unk_8009e0e2))
     {
@@ -519,10 +495,7 @@ void Bot_onUpdate(s32 playerID)
         pBot->state = BOTSTATE_DO_NOTHING;
     }
 
-    if (pBot->enemyID == NO_PLAYER)
-    {
-        pBot->enemyID = PickEnemy(playerID);
-    }
+    if (pBot->enemyID == NO_PLAYER) { pBot->enemyID = PickEnemy(playerID); }
 
     EntityLinkedList * pBallList = _pBallLinkedList;
     Vec3 predictedBallPos;
@@ -539,7 +512,7 @@ void Bot_onUpdate(s32 playerID)
             if ((pBallPhysics) &&
                 (PredictBallCrossingLine(playerID, &pBallObject->pos, &predictedBallPos, pBallPhysics->angle, goalLine)))
             {
-                s32 distSquared = ((pBallObject->pos.x - predictedBallPos.x) * (pBallObject->pos.x - predictedBallPos.x)) + ((pBallObject->pos.z - predictedBallPos.z) * (pBallObject->pos.z - predictedBallPos.z));
+                s32 distSquared = DIST_SQ(pBallObject->pos.x - predictedBallPos.x, pBallObject->pos.z - predictedBallPos.z);
                 if (distSquared < minDistSquared)
                 {
                     minDistSquared = distSquared;
@@ -554,50 +527,20 @@ void Bot_onUpdate(s32 playerID)
     if (pBot->enemyID != NO_PLAYER)
     {
         s32 oppositeBot = PLAYER_1;
-        if (playerID == _Ball_PLAYER_1_ID)
-        {
-            oppositeBot = PLAYER_2;
-        }
-        else if (playerID == _Ball_PLAYER_3_ID)
-        {
-            oppositeBot = PLAYER_4;
-        }
-        else if (playerID == _Ball_PLAYER_4_ID)
-        {
-            oppositeBot = PLAYER_3;
-        }
+        if (playerID == _Ball_PLAYER_1_ID) { oppositeBot = PLAYER_2; }
+        else if (playerID == _Ball_PLAYER_3_ID) { oppositeBot = PLAYER_4; }
+        else if (playerID == _Ball_PLAYER_4_ID) { oppositeBot = PLAYER_3; }
 
         s32 i = 3;
-        if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pRightPlayerID)
-        {
-            i = 0;
-        }
-        else if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pMiddlePlayerID)
-        {
-            i = 1;
-        }
-        else if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pLeftPlayerID)
-        {
-            i = 2;
-        }
+        if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pRightPlayerID) { i = 0; }
+        else if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pMiddlePlayerID) { i = 1; }
+        else if (pBot->enemyID == *playerAdjacencyList[oppositeBot].pLeftPlayerID) { i = 2; }
 
         s32 posAdjustFactor = targetPosAdjustFactor[i];
-        if (playerID == _Ball_PLAYER_1_ID)
-        {
-            xTarget += posAdjustFactor;
-        }
-        else if (playerID == _Ball_PLAYER_2_ID)
-        {
-            xTarget -= posAdjustFactor;
-        }
-        else if (playerID == _Ball_PLAYER_3_ID)
-        {
-            xTarget -= posAdjustFactor; // Probably a typo, should be zTarget += posAdjustFactor
-        }
-        else if (playerID == _Ball_PLAYER_4_ID)
-        {
-            zTarget -= posAdjustFactor;
-        }
+        if (playerID == _Ball_PLAYER_1_ID) { xTarget += posAdjustFactor; }
+        else if (playerID == _Ball_PLAYER_2_ID) { xTarget -= posAdjustFactor; }
+        else if (playerID == _Ball_PLAYER_3_ID) { xTarget -= posAdjustFactor; } // Eurocom derp, should be zTarget += posAdjustFactor
+        else if (playerID == _Ball_PLAYER_4_ID) { zTarget -= posAdjustFactor; }
     }
 
     if (_levelID == LEVELID_N_BALLISM)
@@ -640,61 +583,31 @@ void Bot_onUpdate(s32 playerID)
                     if (pBot->aggroCooldown == 0)
                     {
                         s32 randQuality = Rand(MAX_BOT_QUALITY);
-                        if (randQuality > botQuality)
-                        {
-                            pBot->aggroCooldown = MAX_BOT_QUALITY + ((MAX_BOT_QUALITY - botQuality) / 2);
-                        }
-                        else
-                        {
-                            isAggro = true;
-                        }
+                        if (randQuality > botQuality) { pBot->aggroCooldown = MAX_BOT_QUALITY + ((MAX_BOT_QUALITY - botQuality) / 2); }
+                        else { isAggro = true; }
                     }
-                    if (_noHumansLeft == false)
-                    {
-                        isAggro = true;
-                    }
+                    if (_noHumansLeft == false) { isAggro = true; }
                     if (ShouldShootBall(playerID, pBot->enemyID, randDist, ANG(-45), ANG(45), isAggro))
                     {
-                        if ((!(_minigameMode & MINIGAME_CRYSTAL)) || (_Ball_unk_800c1f0c))
-                        {
-                            BotShootBall(pBot);
-                        }
-                        else
-                        {
-                            pBot->nextInputs |= BTN_CIRCLE;
-                        }
+                        if ((!(_minigameMode & MINIGAME_CRYSTAL)) || (_Ball_unk_800c1f0c)) { BotShootBall(pBot); }
+                        else { pBot->nextInputs |= BTN_CIRCLE; }
                     }
-                    else
-                    {
-                        if (pBot->aggroCooldown)
-                        {
-                            pBot->aggroCooldown--;
-                        }
-                    }
+                    else if (pBot->aggroCooldown) { pBot->aggroCooldown--; }
                 }
             }
             if (minDist)
             {
                 s32 targetDist = pPlayer->pos.z - zTarget;
-                if ((playerID == _Ball_PLAYER_1_ID) || (playerID == _Ball_PLAYER_2_ID))
-                {
-                    targetDist = pPlayer->pos.x - xTarget;
-                }
+                if ((playerID == _Ball_PLAYER_1_ID) || (playerID == _Ball_PLAYER_2_ID)) { targetDist = pPlayer->pos.x - xTarget; }
                 targetDist = Abs(targetDist);
                 s32 noiseDist = Abs(targetDist + ((botQuality + _Ball_defaultChallengeQuality) * MAX_BOT_QUALITY));
                 if (noiseDist > FP(2.5))
                 {
-                    if (noiseDist > minDist)
-                    {
-                        pBot->nextInputs |= BTN_SHOULDERS;
-                    }
+                    if (noiseDist > minDist) { pBot->nextInputs |= BTN_SHOULDERS; }
                     BotSetDirectionalInputs(pBot, targetAngle);
                 }
             }
-            else
-            {
-                pBot->state = BOTSTATE_SET_TARGET;
-            }
+            else { pBot->state = BOTSTATE_SET_TARGET; }
             break;
         case BOTSTATE_FOLLOW_TARGET:
             if (minDist == 0)
@@ -702,20 +615,14 @@ void Bot_onUpdate(s32 playerID)
                 s32 xDist = pPlayer->pos.x - pBot->targetPos.x;
                 s32 zDist = pPlayer->pos.z - pBot->targetPos.z;
                 s32 dist = FP_DIST(xDist, zDist);
-                if (dist >= FP(0.5))
-                {
-                    BotSetDirectionalInputs(pBot, targetAngle);
-                }
+                if (dist >= FP(0.5)) { BotSetDirectionalInputs(pBot, targetAngle); }
                 else
                 {
                     pBot->tauntCooldown = Rand(SECONDS(2)) + SECONDS(1); // max 3s of cooldown
                     pBot->state = BOTSTATE_TAUNT;
                 }
             }
-            else
-            {
-                BotChangeStateDefend(pBot);
-            }
+            else { BotChangeStateDefend(pBot); }
             break;
         case BOTSTATE_TAUNT:
             if (minDist == 0)
@@ -726,36 +633,21 @@ void Bot_onUpdate(s32 playerID)
                     pBot->nextInputs |= BTN_TRIANGLE;
                 }
             }
-            else
-            {
-                BotChangeStateDefend(pBot);
-            }
+            else { BotChangeStateDefend(pBot); }
             break;
         case BOTSTATE_DO_NOTHING:
             break;
         case BOTSTATE_WAIT:
             if (minDist == 0)
             {
-                if (pm.action != ACTION_TAUNT)
-                {
-                    pBot->state = BOTSTATE_SET_TARGET;
-                }
+                if (pm.action != ACTION_TAUNT) { pBot->state = BOTSTATE_SET_TARGET; }
             }
-            else
-            {
-                BotChangeStateDefend(pBot);
-            }
+            else { BotChangeStateDefend(pBot); }
             break;
         default: // Wander around in the center of the map
             pBot->targetPos = pPlayer->pos;
-            if ((playerID == _Ball_PLAYER_1_ID) || (playerID == _Ball_PLAYER_2_ID))
-            {
-                pBot->targetPos.x = Rand(FP(4)) - FP(2);
-            }
-            else
-            {
-                pBot->targetPos.z = Rand(FP(4)) - FP(2);
-            }
+            if ((playerID == _Ball_PLAYER_1_ID) || (playerID == _Ball_PLAYER_2_ID)) { pBot->targetPos.x = Rand(FP(4)) - FP(2); }
+            else { pBot->targetPos.z = Rand(FP(4)) - FP(2); }
             pBot->state = BOTSTATE_FOLLOW_TARGET;
             break;
     }
